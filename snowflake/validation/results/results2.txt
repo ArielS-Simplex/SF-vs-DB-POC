@@ -1,0 +1,439 @@
+name	type	kind	null?	default	primary key	unique key	check	expression	comment	policy name	privacy domain
+TRANSACTION_MAIN_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+TRANSACTION_DATE	TIMESTAMP_NTZ(9)	COLUMN	Y		N	N					
+TRANSACTION_ID_LIFE_CYCLE	VARCHAR(16777216)	COLUMN	Y		N	N					
+TRANSACTION_DATE_LIFE_CYCLE	TIMESTAMP_NTZ(9)	COLUMN	Y		N	N					
+TRANSACTION_TYPE_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+TRANSACTION_TYPE	VARCHAR(16777216)	COLUMN	Y		N	N					
+TRANSACTION_RESULT_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+FINAL_TRANSACTION_STATUS	VARCHAR(16777216)	COLUMN	Y		N	N					
+THREED_FLOW_STATUS	VARCHAR(16777216)	COLUMN	Y		N	N					
+CHALLENGE_PREFERENCE	VARCHAR(16777216)	COLUMN	Y		N	N					
+PREFERENCE_REASON	VARCHAR(16777216)	COLUMN	Y		N	N					
+AUTHENTICATION_FLOW	VARCHAR(16777216)	COLUMN	Y		N	N					
+THREED_FLOW	VARCHAR(16777216)	COLUMN	Y		N	N					
+STATUS	VARCHAR(16777216)	COLUMN	Y		N	N					
+ACS_URL	VARCHAR(16777216)	COLUMN	Y		N	N					
+ACS_RES_AUTHENTICATION_STATUS	VARCHAR(16777216)	COLUMN	Y		N	N					
+R_REQ_AUTHENTICATION_STATUS	VARCHAR(16777216)	COLUMN	Y		N	N					
+TRANSACTION_STATUS_REASON	VARCHAR(16777216)	COLUMN	Y		N	N					
+INTERACTION_COUNTER	VARCHAR(16777216)	COLUMN	Y		N	N					
+CHALLENGE_CANCEL	VARCHAR(16777216)	COLUMN	Y		N	N					
+THREE_DS_METHOD_INDICATION	VARCHAR(16777216)	COLUMN	Y		N	N					
+THREE_DS_PROTOCOL_VERSION	VARCHAR(16777216)	COLUMN	Y		N	N					
+DEVICE_CHANNEL	VARCHAR(16777216)	COLUMN	Y		N	N					
+DEVICE_TYPE	VARCHAR(16777216)	COLUMN	Y		N	N					
+DEVICE_NAME	VARCHAR(16777216)	COLUMN	Y		N	N					
+DEVICE_OS	VARCHAR(16777216)	COLUMN	Y		N	N					
+CHALLENGE_WINDOW_SIZE	VARCHAR(16777216)	COLUMN	Y		N	N					
+TYPE_OF_AUTHENTICATION_METHOD	VARCHAR(16777216)	COLUMN	Y		N	N					
+INIT_STATUS	VARCHAR(16777216)	COLUMN	Y		N	N					
+AUTH_3D_STATUS	VARCHAR(16777216)	COLUMN	Y		N	N					
+SALE_STATUS	VARCHAR(16777216)	COLUMN	Y		N	N					
+AUTH_STATUS	VARCHAR(16777216)	COLUMN	Y		N	N					
+SETTLE_STATUS	VARCHAR(16777216)	COLUMN	Y		N	N					
+VERIFY_AUTH_3D_STATUS	VARCHAR(16777216)	COLUMN	Y		N	N					
+IS_SALE_3D_AUTH_3D	VARCHAR(16777216)	COLUMN	Y		N	N					
+MANAGE_3D_DECISION_AUTH_3D	VARCHAR(16777216)	COLUMN	Y		N	N					
+IS_SUCCESSFUL_CHALLENGE	VARCHAR(16777216)	COLUMN	Y		N	N					
+IS_SUCCESSFUL_EXEMPTION	VARCHAR(16777216)	COLUMN	Y		N	N					
+IS_SUCCESSFUL_FRICTIONLESS	VARCHAR(16777216)	COLUMN	Y		N	N					
+IS_SUCCESSFUL_AUTHENTICATION	VARCHAR(16777216)	COLUMN	Y		N	N					
+IS_APPROVED	VARCHAR(16777216)	COLUMN	Y		N	N					
+IS_DECLINED	VARCHAR(16777216)	COLUMN	Y		N	N					
+IS_CURRENCY_CONVERTED	BOOLEAN	COLUMN	Y		N	N					
+IS_EEA	BOOLEAN	COLUMN	Y		N	N					
+IS_EXTERNAL_MPI	BOOLEAN	COLUMN	Y		N	N					
+IS_PARTIAL_AMOUNT	BOOLEAN	COLUMN	Y		N	N					
+IS_PREPAID	BOOLEAN	COLUMN	Y		N	N					
+IS_SALE_3D	BOOLEAN	COLUMN	Y		N	N					
+IS_VOID	BOOLEAN	COLUMN	Y		N	N					
+LIABILITY_SHIFT	BOOLEAN	COLUMN	Y		N	N					
+MANAGE_3D_DECISION	BOOLEAN	COLUMN	Y		N	N					
+MC_SCHEME_TOKEN_USED	BOOLEAN	COLUMN	Y		N	N					
+PARTIAL_APPROVAL_IS_VOID	BOOLEAN	COLUMN	Y		N	N					
+REBILL	BOOLEAN	COLUMN	Y		N	N					
+IS_3D	BOOLEAN	COLUMN	Y		N	N					
+MULTI_CLIENT_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+CLIENT_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+MULTI_CLIENT_NAME	VARCHAR(16777216)	COLUMN	Y		N	N					
+CLIENT_NAME	VARCHAR(16777216)	COLUMN	Y		N	N					
+INDUSTRY_CODE	VARCHAR(16777216)	COLUMN	Y		N	N					
+DECLINE_REASON	VARCHAR(16777216)	COLUMN	Y		N	N					
+AMOUNT_IN_USD	NUMBER(18,2)	COLUMN	Y		N	N					
+APPROVED_AMOUNT_IN_USD	NUMBER(18,2)	COLUMN	Y		N	N					
+ORIGINAL_CURRENCY_AMOUNT	NUMBER(18,2)	COLUMN	Y		N	N					
+RATE_USD	NUMBER(18,6)	COLUMN	Y		N	N					
+CURRENCY_CODE	VARCHAR(16777216)	COLUMN	Y		N	N					
+TRANSACTION_DURATION	VARCHAR(16777216)	COLUMN	Y		N	N					
+AUTHORIZATION_REQ_DURATION	NUMBER(38,0)	COLUMN	Y		N	N					
+FIRSTINSTALLMENT	VARCHAR(16777216)	COLUMN	Y		N	N					
+PERIODICALINSTALLMENT	VARCHAR(16777216)	COLUMN	Y		N	N					
+NUMBEROFINSTALLMENTS	VARCHAR(16777216)	COLUMN	Y		N	N					
+INSTALLMENTPROGRAM	VARCHAR(16777216)	COLUMN	Y		N	N					
+INSTALLMENTFUNDINGTYPE	VARCHAR(16777216)	COLUMN	Y		N	N					
+FIRST_INSTALLMENT_USD	VARCHAR(16777216)	COLUMN	Y		N	N					
+PERIODICAL_INSTALLMENT_USD	VARCHAR(16777216)	COLUMN	Y		N	N					
+APPLICABLESCENARIOS	VARCHAR(16777216)	COLUMN	Y		N	N					
+CASCADING_AB_TEST_EXPERIMANT_NAME	VARCHAR(16777216)	COLUMN	Y		N	N					
+ISONLINEREFUND	VARCHAR(16777216)	COLUMN	Y		N	N					
+ISNOCVV	VARCHAR(16777216)	COLUMN	Y		N	N					
+ISSUPPORTEDOCT	VARCHAR(16777216)	COLUMN	Y		N	N					
+EXTERNALTOKENTRASACTIONTYPE	VARCHAR(16777216)	COLUMN	Y		N	N					
+SUBSCRIPTIONTYPE	VARCHAR(16777216)	COLUMN	Y		N	N					
+MERCHANTCOUNTRYCODENUM	VARCHAR(16777216)	COLUMN	Y		N	N					
+MCMERCHANTADVICECODE	VARCHAR(16777216)	COLUMN	Y		N	N					
+ACQUIRERBINCOUNTRYID	VARCHAR(16777216)	COLUMN	Y		N	N					
+ACQUIRERBIN	VARCHAR(16777216)	COLUMN	Y		N	N					
+ISPSD2	VARCHAR(16777216)	COLUMN	Y		N	N					
+ISSCASCOPE	VARCHAR(16777216)	COLUMN	Y		N	N					
+ISAIRLINE	VARCHAR(16777216)	COLUMN	Y		N	N					
+REQUESTEDCCCID	VARCHAR(16777216)	COLUMN	Y		N	N					
+MERCHANT_COUNTRY	VARCHAR(16777216)	COLUMN	Y		N	N					
+ISCARDREPLACED	VARCHAR(16777216)	COLUMN	Y		N	N					
+ISVDCUFEEAPPLIED	VARCHAR(16777216)	COLUMN	Y		N	N					
+AFTTYPE	VARCHAR(16777216)	COLUMN	Y		N	N					
+SECONDARYCCCID	VARCHAR(16777216)	COLUMN	Y		N	N					
+USER_AGENT_3D	VARCHAR(16777216)	COLUMN	Y		N	N					
+AUTHENTICATION_REQUEST	VARCHAR(16777216)	COLUMN	Y		N	N					
+AUTHENTICATION_RESPONSE	VARCHAR(16777216)	COLUMN	Y		N	N					
+CREDIT_CARD_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+CCCID	VARCHAR(16777216)	COLUMN	Y		N	N					
+BIN	VARCHAR(16777216)	COLUMN	Y		N	N					
+CARD_SCHEME	VARCHAR(16777216)	COLUMN	Y		N	N					
+CARD_TYPE	VARCHAR(16777216)	COLUMN	Y		N	N					
+CONSUMER_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+ISSUER_BANK_NAME	VARCHAR(16777216)	COLUMN	Y		N	N					
+DEVICE_CHANNEL_NAME	VARCHAR(16777216)	COLUMN	Y		N	N					
+BIN_COUNTRY	VARCHAR(16777216)	COLUMN	Y		N	N					
+REGION	VARCHAR(16777216)	COLUMN	Y		N	N					
+PAYMENT_INSTRUMENT	VARCHAR(16777216)	COLUMN	Y		N	N					
+SOURCE_APPLICATION	VARCHAR(16777216)	COLUMN	Y		N	N					
+ENABLE_PARTIAL_APPROVAL	VARCHAR(16777216)	COLUMN	Y		N	N					
+PARTIAL_APPROVAL_VOID_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+PARTIAL_APPROVAL_VOID_TIME	VARCHAR(16777216)	COLUMN	Y		N	N					
+PARTIAL_APPROVAL_REQUESTED_AMOUNT	NUMBER(18,2)	COLUMN	Y		N	N					
+PARTIAL_APPROVAL_REQUESTED_CURRENCY	VARCHAR(16777216)	COLUMN	Y		N	N					
+PARTIAL_APPROVAL_PROCESSED_AMOUNT	NUMBER(18,2)	COLUMN	Y		N	N					
+PARTIAL_APPROVAL_PROCESSED_CURRENCY	VARCHAR(16777216)	COLUMN	Y		N	N					
+PARTIAL_APPROVAL_PROCESSED_AMOUNT_IN_USD	NUMBER(18,2)	COLUMN	Y		N	N					
+WEBSITE_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+BROWSER_USER_AGENT	VARCHAR(16777216)	COLUMN	Y		N	N					
+IP_COUNTRY	VARCHAR(16777216)	COLUMN	Y		N	N					
+PROCESSOR_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+PROCESSOR_NAME	VARCHAR(16777216)	COLUMN	Y		N	N					
+RISK_EMAIL_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+EMAIL_SENIORITY_START_DATE	VARCHAR(16777216)	COLUMN	Y		N	N					
+EMAIL_PAYMENT_ATTEMPTS	NUMBER(38,0)	COLUMN	Y		N	N					
+FINAL_FRAUD_DECISION_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+EXTERNAL_TOKEN_ECI	VARCHAR(16777216)	COLUMN	Y		N	N					
+RISK_THREED_ECI	VARCHAR(16777216)	COLUMN	Y		N	N					
+THREED_ECI	VARCHAR(16777216)	COLUMN	Y		N	N					
+CVV_CODE	VARCHAR(16777216)	COLUMN	Y		N	N					
+PROVIDER_RESPONSE_CODE	VARCHAR(16777216)	COLUMN	Y		N	N					
+ISSUER_CARD_PROGRAM_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+SCENARIO_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+PREVIOUS_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+NEXT_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+STEP	VARCHAR(16777216)	COLUMN	Y		N	N					
+REPROCESS_3D_REASON	VARCHAR(16777216)	COLUMN	Y		N	N					
+DATA_ONLY_AUTHENTICATION_RESULT	VARCHAR(16777216)	COLUMN	Y		N	N					
+IS_CASCADED_AFTER_DATA_ONLY_AUTHENTICATION	BOOLEAN	COLUMN	Y		N	N					
+NEXT_ACTION	VARCHAR(16777216)	COLUMN	Y		N	N					
+AUTHENTICATION_METHOD	VARCHAR(16777216)	COLUMN	Y		N	N					
+CAVV_VERIFICATION_CODE	VARCHAR(16777216)	COLUMN	Y		N	N					
+CHANNEL	VARCHAR(16777216)	COLUMN	Y		N	N					
+CC_HASH	VARCHAR(16777216)	COLUMN	Y		N	N					
+EXP_DATE	VARCHAR(16777216)	COLUMN	Y		N	N					
+MESSAGE_VERSION_3D	VARCHAR(16777216)	COLUMN	Y		N	N					
+CC_SENIORITY_START_DATE	VARCHAR(16777216)	COLUMN	Y		N	N					
+STORED_CREDENTIALS_MODE	VARCHAR(16777216)	COLUMN	Y		N	N					
+AVS_CODE	VARCHAR(16777216)	COLUMN	Y		N	N					
+CREDIT_TYPE_ID	NUMBER(38,0)	COLUMN	Y		N	N					
+SUBSCRIPTION_STEP	VARCHAR(16777216)	COLUMN	Y		N	N					
+SCHEME_TOKEN_FETCHING_RESULT	VARCHAR(16777216)	COLUMN	Y		N	N					
+BROWSER_SCREEN_HEIGHT	NUMBER(38,0)	COLUMN	Y		N	N					
+BROWSER_SCREEN_WIDTH	NUMBER(38,0)	COLUMN	Y		N	N					
+FILTER_REASON_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+REASON_CODE	VARCHAR(16777216)	COLUMN	Y		N	N					
+REASON	VARCHAR(16777216)	COLUMN	Y		N	N					
+REQUEST_TIMESTAMP_SERVICE	VARCHAR(16777216)	COLUMN	Y		N	N					
+TOKEN_UNIQUE_REFERENCE_SERVICE	VARCHAR(16777216)	COLUMN	Y		N	N					
+RESPONSE_TIMESTAMP_SERVICE	VARCHAR(16777216)	COLUMN	Y		N	N					
+API_TYPE_SERVICE	VARCHAR(16777216)	COLUMN	Y		N	N					
+REQUEST_TIMESTAMP_FETCHING	VARCHAR(16777216)	COLUMN	Y		N	N					
+TOKEN_UNIQUE_REFERENCE_FETCHING	VARCHAR(16777216)	COLUMN	Y		N	N					
+RESPONSE_TIMESTAMP_FETCHING	VARCHAR(16777216)	COLUMN	Y		N	N					
+API_TYPE_FETCHING	VARCHAR(16777216)	COLUMN	Y		N	N					
+IS_CRYPTOGRAM_FETCHING_SKIPPED	BOOLEAN	COLUMN	Y		N	N					
+IS_EXTERNAL_SCHEME_TOKEN	BOOLEAN	COLUMN	Y		N	N					
+THREE_DS_SERVER_TRANS_ID	VARCHAR(16777216)	COLUMN	Y		N	N					
+GATEWAY_ID	NUMBER(38,0)	COLUMN	Y		N	N					
+CC_REQUEST_TYPE_ID	NUMBER(38,0)	COLUMN	Y		N	N					
+UPO_ID	NUMBER(38,0)	COLUMN	Y		N	N					
+INSERTED_AT	TIMESTAMP_NTZ(9)	COLUMN	Y		N	N									
+
+
+col_name	data_type	comment
+transaction_main_id	string	null
+transaction_date	timestamp	null
+transaction_id_life_cycle	string	null
+transaction_date_life_cycle	timestamp	null
+transaction_type_id	string	null
+transaction_type	string	null
+transaction_result_id	string	null
+final_transaction_status	string	null
+multi_client_id	string	null
+client_id	string	null
+multi_client_name	string	null
+client_name	string	null
+3d_flow_status	string	null
+challenge_preference	string	null
+preference_reason	string	null
+authentication_flow	string	null
+3d_flow	string	null
+is_void	string	null
+liability_shift	string	null
+status	string	null
+acs_url	string	null
+acs_res_authentication_status	string	null
+r_req_authentication_status	string	null
+transaction_status_reason	string	null
+interaction_counter	double	null
+challenge_cancel	string	null
+three_ds_method_indication	string	null
+is_sale_3d	string	null
+manage_3d_decision	string	null
+decline_reason	string	null
+amount_in_usd	double	null
+approved_amount_in_usd	double	null
+original_currency_amount	double	null
+rate_usd	double	null
+currency_code	string	null
+three_ds_protocol_version	string	null
+is_external_mpi	string	null
+rebill	string	null
+device_channel	string	null
+user_agent_3d	string	null
+device_type	string	null
+device_name	string	null
+device_os	string	null
+challenge_window_size	string	null
+type_of_authentication_method	string	null
+industry_code	string	null
+credit_card_id	string	null
+cccid	string	null
+bin	string	null
+is_prepaid	string	null
+card_scheme	string	null
+card_type	string	null
+consumer_id	string	null
+issuer_bank_name	string	null
+device_channel_name	string	null
+bin_country	string	null
+is_eea	string	null
+region	string	null
+payment_instrument	string	null
+source_application	string	null
+is_partial_amount	string	null
+enable_partial_approval	string	null
+partial_approval_is_void	string	null
+partial_approval_void_id	string	null
+partial_approval_void_time	timestamp	null
+partial_approval_requested_amount	double	null
+partial_approval_requested_currency	string	null
+partial_approval_processed_amount	double	null
+partial_approval_processed_currency	string	null
+partial_approval_processed_amount_in_usd	double	null
+website_id	string	null
+browser_user_agent	string	null
+ip_country	string	null
+processor_id	string	null
+processor_name	string	null
+risk_email_id	string	null
+is_currency_converted	string	null
+email_seniority_start_date	timestamp	null
+email_payment_attempts	double	null
+final_fraud_decision_id	string	null
+external_token_eci	string	null
+risk_threed_eci	string	null
+threed_eci	string	null
+cvv_code	string	null
+provider_response_code	string	null
+issuer_card_program_id	string	null
+scenario_id	string	null
+previous_id	string	null
+next_id	string	null
+step	string	null
+reprocess_3d_reason	string	null
+data_only_authentication_result	string	null
+is_cascaded_after_data_only_authentication	string	null
+next_action	string	null
+authentication_method	string	null
+cavv_verification_code	string	null
+channel	string	null
+authentication_request	string	null
+authentication_response	string	null
+cc_hash	string	null
+exp_date	string	null
+message_version_3d	string	null
+cc_seniority_start_date	timestamp	null
+mc_scheme_token_used	string	null
+is_sale_3d_auth_3d	string	null
+manage_3d_decision_auth_3d	string	null
+init_status	string	null
+auth_3d_status	string	null
+sale_status	string	null
+auth_status	string	null
+settle_status	string	null
+verify_auth_3d_status	string	null
+is_successful_challenge	string	null
+is_successful_exemption	string	null
+is_successful_frictionless	string	null
+is_successful_authentication	string	null
+is_approved	string	null
+is_declined	string	null
+inserted_at	timestamp	null
+stored_credentials_mode	string	null
+avs_code	string	null
+is_3d	string	null
+credit_type_id	string	null
+subscription_step	string	null
+scheme_token_fetching_result	string	null
+browser_screen_height	string	null
+browser_screen_width	string	null
+filter_reason_id	string	null
+reason_code	string	null
+reason	string	null
+request_timestamp_service	timestamp	null
+token_unique_reference_service	string	null
+response_timestamp_service	timestamp	null
+api_type_service	string	null
+request_timestamp_fetching	string	null
+token_unique_reference_fetching	string	null
+response_timestamp_fetching	string	null
+api_type_fetching	string	null
+is_cryptogram_fetching_skipped	string	null
+is_external_scheme_token	string	null
+three_ds_server_trans_id	string	null
+gateway_id	string	null
+cc_request_type_id	string	null
+upo_id	string	null
+IsCardReplaced	string	null
+IsVdcuFeeApplied	string	null
+AftType	int	null
+secondarycccid	string	null
+transaction_duration	int	null
+authorization_req_duration	float	null
+FirstInstallment	float	null
+PeriodicalInstallment	float	null
+numberOfInstallments	int	null
+InstallmentProgram	int	null
+InstallmentFundingType	int	null
+first_installment_usd	float	null
+periodical_installment_usd	float	null
+ApplicableScenarios	string	null
+cascading_ab_test_experimant_name	string	null
+
+
+
+
+TEST_TYPE	TOTAL_ROWS	UNIQUE_TRANSACTIONS	MIN_DATE	MAX_DATE
+SF - Row Count Check	12686818	12686818	2025-09-05 00:00:00.017	2025-09-05 23:59:59.997
+
+
+
+test_type	total_rows	unique_transactions	min_date	max_date
+DB - Row Count Check	12686818	12686818	2025-09-05T00:00:00.017	2025-09-05T23:59:59.997
+
+
+TEST_TYPE	TOTAL_ROWS	INIT_STATUS_POPULATED	AUTH_3D_STATUS_POPULATED	SALE_STATUS_POPULATED	AUTH_STATUS_POPULATED	SETTLE_STATUS_POPULATED	VERIFY_AUTH_3D_STATUS_POPULATED
+SF - Status Flags Validation	12686818	2784126	1574187	4347039	1847283	1445673	50093
+
+
+
+test_type	total_rows	init_status_populated	auth_3d_status_populated	sale_status_populated	auth_status_populated	settle_status_populated	verify_auth_3d_status_populated
+DB - Status Flags Validation	12686818	2784126	1574187	4347039	1847283	1445673	50093
+
+
+TEST_TYPE	TOTAL_ROWS	AUTH3D_CONDITIONAL_COPIES	AUTH3D_DECISION_COPIES	NON_AUTH3D_NULL_COPIES
+SF - Conditional Copies Validation	12686818	1574187	1574187	11112631
+
+
+test_type	total_rows	auth3d_conditional_copies	auth3d_decision_copies	non_auth3d_null_copies
+DB - Conditional Copies Validation	12686818	1571569	1571569	11112631
+
+
+
+
+TEST_TYPE	TOTAL_ROWS	CHALLENGE_POPULATED	EXEMPTION_POPULATED	FRICTIONLESS_POPULATED	AUTHENTICATION_POPULATED	CHALLENGE_SUCCESS_COUNT	AUTH_SUCCESS_COUNT
+SF - 3D Secure Analysis Validation	12686818	755248	2323958	699154	1454707	600894	1290855
+
+
+test_type	total_rows	challenge_populated	exemption_populated	frictionless_populated	authentication_populated	challenge_success_count	auth_success_count
+DB - 3D Secure Analysis Validation	12686818	755248	2323958	699154	1454707	600894	1290855
+
+
+TEST_TYPE	TOTAL_ROWS	APPROVED_COUNT	NOT_APPROVED_COUNT	DECLINED_COUNT	NOT_DECLINED_COUNT	LOGIC_CONFLICT_COUNT
+SF - Approval/Decline Logic Validation	12686818	5185675	1008647	952149	5242173	0
+
+test_type	total_rows	approved_count	not_approved_count	declined_count	not_declined_count	logic_conflict_count
+DB - Approval/Decline Logic Validation	12686818	5185675	1008647	952149	5242173	0
+
+
+TEST_TYPE	TOTAL_ROWS	CURRENCY_CONVERTED_TRUE	CURRENCY_CONVERTED_FALSE	EEA_TRUE	EEA_FALSE	IS_3D_TRUE	IS_3D_FALSE	IS_VOID_TRUE	LIABILITY_SHIFT_TRUE
+SF - Boolean Conversions Validation	12686818	34165	12652653	8559080	4127738	1515344	11171474	29401	0
+
+
+test_type	total_rows	currency_converted_true	currency_converted_false	eea_true	eea_false	is_3d_true	is_3d_false	is_void_true	liability_shift_true
+DB - Boolean Conversions Validation	12686818	34165	12652653	8559080	4123276	1515344	11171474	29401	2402585
+
+
+TEST_TYPE	TOTAL_ROWS	TEST_CLIENTS_FOUND	NULL_TRANSACTION_IDS	NULL_DATES	NULL_OR_ZERO_AMOUNTS
+SF - Data Quality Check	12686818	0	0	0	133433
+
+test_type	total_rows	test_clients_found	null_transaction_ids	null_dates	null_or_zero_amounts
+DB - Data Quality Check	12686818	0	0	0	133433
+
+
+
+TEST_TYPE	TRANSACTION_MAIN_ID	TRANSACTION_TYPE	TRANSACTION_RESULT_ID	INIT_STATUS	AUTH_3D_STATUS	SALE_STATUS	AUTH_STATUS	IS_APPROVED	IS_DECLINED	IS_SUCCESSFUL_AUTHENTICATION	AMOUNT_IN_USD
+SF - Sample Data	1110000000929966334	AUTH	1006				TRUE	TRUE	FALSE		2.69
+SF - Sample Data	1110000000929966361	AUTH	1006				TRUE	TRUE	FALSE		2.69
+SF - Sample Data	1110000000929966362	AUTH	1006				TRUE	TRUE	FALSE		1.35
+SF - Sample Data	1110000000929966367	AUTH	1006				TRUE	TRUE	FALSE		26.90
+SF - Sample Data	1110000000929966368	AUTH	1006				TRUE	TRUE	FALSE		2.69
+
+
+test_type	transaction_main_id	transaction_type	transaction_result_id	init_status	auth_3d_status	sale_status	auth_status	is_approved	is_declined	is_successful_authentication	amount_in_usd
+DB - Sample Data	1110000000929966334	auth	1006	null	null	null	true	true	false	null	2.69
+DB - Sample Data	1110000000929966361	auth	1006	null	null	null	true	true	false	null	2.69
+DB - Sample Data	1110000000929966362	auth	1006	null	null	null	true	true	false	null	1.35
+DB - Sample Data	1110000000929966367	auth	1006	null	null	null	true	true	false	null	26.9
+DB - Sample Data	1110000000929966368	auth	1006	null	null	null	true	true	false	null	2.69
+
+
+
+TEST_TYPE	TRANSACTION_TYPE	COUNT	SUCCESS_1006_COUNT	DECLINE_1008_COUNT	AUTH_STATUS_POPULATED	SALE_STATUS_POPULATED	AUTH3D_STATUS_POPULATED	CONDITIONAL_COPIES_POPULATED
+SF - Transaction Logic Deep Dive	ABUUPDATE	175	55	108	0	0	0	0
+SF - Transaction Logic Deep Dive	AUTH	1847283	1529497	303127	1847283	0	0	0
+SF - Transaction Logic Deep Dive	AUTH3D	1574187	1555415	17090	0	0	1574187	1574187
+SF - Transaction Logic Deep Dive	CREDIT	608841	595570	11396	0	0	0	0
+SF - Transaction Logic Deep Dive	INITAUTH3D	2784126	2782282	0	0	0	0	0
+SF - Transaction Logic Deep Dive	SALE	4347039	3656178	649022	0	4347039	0	0
+SF - Transaction Logic Deep Dive	SETTLE	1445673	1444916	12	0	0	0	0
+SF - Transaction Logic Deep Dive	VERIFYAUTH3D	50093	38112	0	0	0	0	0
+SF - Transaction Logic Deep Dive	VOID	29401	29067	97	0	0	0	0
+
+
+
+test_type	transaction_type	count	success_1006_count	decline_1008_count	auth_status_populated	sale_status_populated	auth3d_status_populated	conditional_copies_populated
+DB - Transaction Logic Deep Dive	abu_update	175	55	108	0	0	0	0
+DB - Transaction Logic Deep Dive	auth	1847283	1529497	303127	1847283	0	0	0
+DB - Transaction Logic Deep Dive	auth3d	1574187	1555415	17090	0	0	1574187	1571569
+DB - Transaction Logic Deep Dive	credit	608841	595570	11396	0	0	0	0
+DB - Transaction Logic Deep Dive	initauth3d	2784126	2782282	0	0	0	0	0
+DB - Transaction Logic Deep Dive	sale	4347039	3656178	649022	0	4347039	0	0
+DB - Transaction Logic Deep Dive	settle	1445673	1444916	12	0	0	0	0
+DB - Transaction Logic Deep Dive	verify_auth_3d	50093	38112	0	0	0	0	0
+DB - Transaction Logic Deep Dive	void	29401	29067	97	0	0	0	0

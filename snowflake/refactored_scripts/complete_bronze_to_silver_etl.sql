@@ -11,16 +11,24 @@ WITH base_data AS (
     SELECT *
     FROM POC.PUBLIC.NCP_BRONZE_V2
     WHERE DATE(transaction_date) = '2025-09-05'
-      AND multi_client_name NOT IN ('test multi', 'davidh test2 multi', 'ice demo multi', 'monitoring client pod2 multi')
+      AND transaction_main_id IS NOT NULL 
+      AND transaction_date IS NOT NULL
+      AND LOWER(TRIM(multi_client_name)) NOT IN (
+        'test multi', 
+        'davidh test2 multi', 
+        'ice demo multi', 
+        'monitoring client pod2 multi'
+      )
 ),
 
 -- Deduplication using ROW_NUMBER (equivalent to Databricks dropDuplicates)
+-- Fixed: Using TRANSACTION_DATE instead of transaction_id_life_cycle to match working ETL
 deduplicated_data AS (
     SELECT *
     FROM (
         SELECT *,
                ROW_NUMBER() OVER (
-                   PARTITION BY transaction_main_id, transaction_id_life_cycle
+                   PARTITION BY transaction_main_id, transaction_date
                    ORDER BY inserted_at DESC
                ) as rn
         FROM base_data
@@ -62,8 +70,8 @@ status_flags_calculated AS (
            
            -- 3D Secure success analysis (lines 154-179 in Databricks)
            CASE 
-               WHEN "3d_flow_status" = '3d_success' THEN 'true'
-               WHEN "3d_flow_status" IN ('3d_failure', '3d_wasnt_completed') THEN 'false'
+               WHEN THREED_FLOW_STATUS = '3d_success' THEN 'true'
+               WHEN THREED_FLOW_STATUS IN ('3d_failure', '3d_wasnt_completed') THEN 'false'
            END AS is_successful_challenge,
            
            CASE 
@@ -77,7 +85,7 @@ status_flags_calculated AS (
            END AS is_successful_frictionless,
            
            CASE 
-               WHEN "3d_flow_status" = '3d_success' 
+               WHEN THREED_FLOW_STATUS = '3d_success' 
                     OR (authentication_flow = 'frictionless' AND status = '40') THEN 'true'
                WHEN (acs_url IS NOT NULL AND authentication_flow != 'exemption')
                     OR (authentication_flow = 'frictionless' AND status != '40') THEN 'false'
@@ -118,11 +126,11 @@ SELECT
     final_transaction_status,
     
     -- 3D Secure flow columns
-    "3d_flow_status",
+    THREED_FLOW_STATUS,
     challenge_preference,
     preference_reason,
     authentication_flow,
-    "3d_flow",
+    THREED_FLOW,
     status,
     acs_url,
     acs_res_authentication_status,
@@ -296,6 +304,119 @@ SELECT
     NULL::STRING AS user_agent_3d,
     NULL::STRING AS authentication_request,
     NULL::STRING AS authentication_response,
+    
+    -- Missing columns from Databricks schema (adding ~40 columns to reach 143)
+    -- Card and payment columns
+    credit_card_id,
+    cccid,
+    bin,
+    card_scheme,
+    card_type,
+    consumer_id,
+    issuer_bank_name,
+    device_channel_name,
+    bin_country,
+    region,
+    payment_instrument,
+    source_application,
+    
+    -- Partial approval columns
+    enable_partial_approval,
+    partial_approval_void_id,
+    partial_approval_void_time,
+    COALESCE(TRY_CAST(partial_approval_requested_amount AS DECIMAL(18,2)), 0) AS partial_approval_requested_amount,
+    partial_approval_requested_currency,
+    COALESCE(TRY_CAST(partial_approval_processed_amount AS DECIMAL(18,2)), 0) AS partial_approval_processed_amount,
+    partial_approval_processed_currency,
+    COALESCE(TRY_CAST(partial_approval_processed_amount_in_usd AS DECIMAL(18,2)), 0) AS partial_approval_processed_amount_in_usd,
+    
+    -- Website and risk columns
+    website_id,
+    browser_user_agent,
+    ip_country,
+    processor_id,
+    processor_name,
+    risk_email_id,
+    email_seniority_start_date,
+    TRY_CAST(email_payment_attempts AS INTEGER) AS email_payment_attempts,
+    final_fraud_decision_id,
+    
+    -- Token and security columns
+    external_token_eci,
+    risk_threed_eci,
+    threed_eci,
+    cvv_code,
+    provider_response_code,
+    issuer_card_program_id,
+    
+    -- Transaction flow columns
+    scenario_id,
+    previous_id,
+    next_id,
+    step,
+    reprocess_3d_reason,
+    data_only_authentication_result,
+    
+    -- Boolean conversion for cascaded authentication
+    CASE 
+        WHEN LOWER(TRIM(is_cascaded_after_data_only_authentication)) IN ('true', '1', 'yes', '1.0') THEN TRUE
+        WHEN LOWER(TRIM(is_cascaded_after_data_only_authentication)) IN ('false', '0', 'no', '0.0') THEN FALSE
+        ELSE NULL
+    END AS is_cascaded_after_data_only_authentication,
+    
+    next_action,
+    authentication_method,
+    cavv_verification_code,
+    channel,
+    
+    -- Card details columns
+    cc_hash,
+    exp_date,
+    message_version_3d,
+    cc_seniority_start_date,
+    
+    -- Credentials and stored data
+    stored_credentials_mode,
+    avs_code,
+    TRY_CAST(credit_type_id AS INTEGER) AS credit_type_id,
+    subscription_step,
+    
+    -- Token fetching columns
+    scheme_token_fetching_result,
+    TRY_CAST(browser_screen_height AS INTEGER) AS browser_screen_height,
+    TRY_CAST(browser_screen_width AS INTEGER) AS browser_screen_width,
+    filter_reason_id,
+    reason_code,
+    reason,
+    
+    -- Service timestamp columns
+    request_timestamp_service,
+    token_unique_reference_service,
+    response_timestamp_service,
+    api_type_service,
+    request_timestamp_fetching,
+    token_unique_reference_fetching,
+    response_timestamp_fetching,
+    api_type_fetching,
+    
+    -- Boolean conversion for token processing
+    CASE 
+        WHEN LOWER(TRIM(is_cryptogram_fetching_skipped)) IN ('true', '1', 'yes', '1.0') THEN TRUE
+        WHEN LOWER(TRIM(is_cryptogram_fetching_skipped)) IN ('false', '0', 'no', '0.0') THEN FALSE
+        ELSE NULL
+    END AS is_cryptogram_fetching_skipped,
+    
+    CASE 
+        WHEN LOWER(TRIM(is_external_scheme_token)) IN ('true', '1', 'yes', '1.0') THEN TRUE
+        WHEN LOWER(TRIM(is_external_scheme_token)) IN ('false', '0', 'no', '0.0') THEN FALSE
+        ELSE NULL
+    END AS is_external_scheme_token,
+    
+    -- 3DS server and gateway columns
+    three_ds_server_trans_id,
+    TRY_CAST(gateway_id AS INTEGER) AS gateway_id,
+    TRY_CAST(cc_request_type_id AS INTEGER) AS cc_request_type_id,
+    TRY_CAST(upo_id AS INTEGER) AS upo_id,
     
     -- Metadata (line 450)
     inserted_at

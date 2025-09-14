@@ -1,4 +1,8 @@
-
+-- ==============================================================================
+-- ENHANCED WORKING ETL - Based on final/02_bronze_to_silver_sept2-9.sql
+-- Added missing columns for 173-column parity with current ETL
+-- Status: Working row counts + business logic + expanded schema
+-- ==============================================================================
 -- BRONZE TO SILVER ETL - SEPTEMBER 5, 2025 (1 DAY)
 -- Processing single day with complete 143-column Databricks parity
 -- V2 VERSION - Protects existing tables
@@ -82,7 +86,26 @@ SELECT
         WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'VERIFY_AUTH_3D' AND TRIM(COALESCE(transaction_result_id, '')) = '1006' THEN TRUE
         WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'VERIFY_AUTH_3D' THEN FALSE
         ELSE NULL
-    END AS verify_auth_3d_status
+    END AS verify_auth_3d_status,
+    
+    -- DATABRICKS DERIVED COLUMNS - Conditional copies
+    CASE 
+        WHEN LOWER(TRIM(COALESCE(transaction_type, ''))) = 'auth3d' THEN CASE 
+            WHEN LOWER(TRIM(COALESCE(is_sale_3d, ''))) IN ('yes', 'true', '1') THEN TRUE
+            WHEN LOWER(TRIM(COALESCE(is_sale_3d, ''))) IN ('no', 'false', '0', '') THEN FALSE
+            ELSE NULL
+        END
+        ELSE NULL
+    END AS is_sale_3d_auth_3d,
+    
+    CASE 
+        WHEN LOWER(TRIM(COALESCE(transaction_type, ''))) = 'auth3d' THEN CASE 
+            WHEN LOWER(TRIM(COALESCE(manage_3d_decision, ''))) IN ('yes', 'true', '1') THEN TRUE
+            WHEN LOWER(TRIM(COALESCE(manage_3d_decision, ''))) IN ('no', 'false', '0', '') THEN FALSE
+            ELSE NULL
+        END
+        ELSE NULL
+    END AS manage_3d_decision_auth_3d
 
 FROM filtered_data
 )
@@ -123,25 +146,6 @@ SELECT
         ELSE NULL
     END AS is_3d,
     
-    -- DATABRICKS DERIVED COLUMNS - Conditional copies
-    CASE 
-        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'AUTH3D' THEN CASE 
-            WHEN LOWER(TRIM(COALESCE(is_sale_3d, ''))) IN ('yes', 'true', '1') THEN TRUE
-            WHEN LOWER(TRIM(COALESCE(is_sale_3d, ''))) IN ('no', 'false', '0', '') THEN FALSE
-            ELSE NULL
-        END
-        ELSE NULL
-    END AS is_sale_3d_auth_3d,
-    
-    CASE 
-        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'AUTH3D' THEN CASE 
-            WHEN LOWER(TRIM(COALESCE(manage_3d_decision, ''))) IN ('yes', 'true', '1') THEN TRUE
-            WHEN LOWER(TRIM(COALESCE(manage_3d_decision, ''))) IN ('no', 'false', '0', '') THEN FALSE
-            ELSE NULL
-        END
-        ELSE NULL
-    END AS manage_3d_decision_auth_3d,
-    
     -- DATABRICKS DERIVED COLUMNS - Reference calculated status flags
     init_status,
     auth_3d_status,
@@ -149,6 +153,10 @@ SELECT
     auth_status,
     settle_status,
     verify_auth_3d_status,
+    
+    -- DATABRICKS DERIVED COLUMNS - Conditional copies (from CTE)
+    is_sale_3d_auth_3d,
+    manage_3d_decision_auth_3d,
     
     -- DATABRICKS DERIVED COLUMNS - 3D Secure success analysis (FIXED CASE SENSITIVITY)
     CASE 
@@ -158,23 +166,23 @@ SELECT
     END AS is_successful_challenge,
     
     CASE 
-        WHEN TRIM(COALESCE(authentication_flow, '')) = 'exemption' THEN TRUE
-        WHEN TRIM(COALESCE(challenge_preference, '')) = 'y_requested_by_acquirer' THEN FALSE
+        WHEN UPPER(TRIM(COALESCE(authentication_flow, ''))) = 'EXEMPTION' THEN TRUE
+        WHEN UPPER(TRIM(COALESCE(challenge_preference, ''))) = 'Y_REQUESTED_BY_ACQUIRER' THEN FALSE
         ELSE NULL
     END AS is_successful_exemption,
     
     CASE 
-        WHEN TRIM(COALESCE(authentication_flow, '')) = 'frictionless' AND TRIM(COALESCE(status, '')) = '40' THEN TRUE
-        WHEN TRIM(COALESCE(authentication_flow, '')) = 'frictionless' THEN FALSE
+        WHEN UPPER(TRIM(COALESCE(authentication_flow, ''))) = 'FRICTIONLESS' AND TRIM(COALESCE(status, '')) = '40' THEN TRUE
+        WHEN UPPER(TRIM(COALESCE(authentication_flow, ''))) = 'FRICTIONLESS' THEN FALSE
         ELSE NULL
     END AS is_successful_frictionless,
     
     -- DATABRICKS DERIVED COLUMNS - Successful authentication (complex logic) (FIXED CASE SENSITIVITY)
     CASE 
         WHEN UPPER(TRIM(COALESCE(threed_flow_status, ''))) = '3D_SUCCESS' 
-          OR (TRIM(COALESCE(authentication_flow, '')) = 'frictionless' AND TRIM(COALESCE(status, '')) = '40') THEN TRUE
-        WHEN (TRIM(COALESCE(acs_url, '')) IS NOT NULL AND TRIM(COALESCE(acs_url, '')) != '' AND TRIM(COALESCE(authentication_flow, '')) != 'exemption')
-          OR (TRIM(COALESCE(authentication_flow, '')) = 'frictionless' AND TRIM(COALESCE(status, '')) != '40' AND TRIM(COALESCE(status, '')) != '') THEN FALSE
+          OR (UPPER(TRIM(COALESCE(authentication_flow, ''))) = 'FRICTIONLESS' AND TRIM(COALESCE(status, '')) = '40') THEN TRUE
+        WHEN (TRIM(COALESCE(acs_url, '')) IS NOT NULL AND TRIM(COALESCE(acs_url, '')) != '' AND UPPER(TRIM(COALESCE(authentication_flow, ''))) != 'EXEMPTION')
+          OR (UPPER(TRIM(COALESCE(authentication_flow, ''))) = 'FRICTIONLESS' AND TRIM(COALESCE(status, '')) != '40' AND TRIM(COALESCE(status, '')) != '') THEN FALSE
         ELSE NULL
     END AS is_successful_authentication,
     

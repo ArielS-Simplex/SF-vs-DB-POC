@@ -23,12 +23,7 @@ WHERE TABLE_SCHEMA = 'PUBLIC'
 
 -- 🟠 DATABRICKS: Column Count Check
 %sql
-SELECT 'DB - Column Count Check' AS test_type,
-       COUNT(*) AS databricks_columns
-FROM (
-  DESCRIBE ncp.silver
-);
--- Expected: 143 columns
+DESCRIBE ncp.silver
 
 -- ========================================
 -- LEVEL 2: DATA VOLUME VALIDATION
@@ -84,12 +79,12 @@ WHERE DATE(transaction_date) = '2025-09-05';
 -- LEVEL 4: BUSINESS LOGIC VALIDATION
 -- ========================================
 
--- 🔵 SNOWFLAKE: Conditional Copies Logic
+-- 🔵 SNOWFLAKE: Conditional Copies Logic (FIXED CASE SENSITIVITY)
 SELECT 'SF - Conditional Copies Validation' AS test_type,
        COUNT(*) AS total_rows,
-       COUNT(CASE WHEN transaction_type = 'auth3d' AND is_sale_3d_auth_3d IS NOT NULL THEN 1 END) AS auth3d_conditional_copies,
-       COUNT(CASE WHEN transaction_type = 'auth3d' AND manage_3d_decision_auth_3d IS NOT NULL THEN 1 END) AS auth3d_decision_copies,
-       COUNT(CASE WHEN transaction_type != 'auth3d' AND is_sale_3d_auth_3d IS NULL THEN 1 END) AS non_auth3d_null_copies
+       COUNT(CASE WHEN UPPER(transaction_type) = 'AUTH3D' AND is_sale_3d_auth_3d IS NOT NULL THEN 1 END) AS auth3d_conditional_copies,
+       COUNT(CASE WHEN UPPER(transaction_type) = 'AUTH3D' AND manage_3d_decision_auth_3d IS NOT NULL THEN 1 END) AS auth3d_decision_copies,
+       COUNT(CASE WHEN UPPER(transaction_type) != 'AUTH3D' AND is_sale_3d_auth_3d IS NULL THEN 1 END) AS non_auth3d_null_copies
 FROM POC.PUBLIC.NCP_SILVER_V2;
 
 -- 🟠 DATABRICKS: Conditional Copies Logic
@@ -232,7 +227,7 @@ SELECT 'SF - Sample Data' AS test_type,
        is_successful_authentication,
        ROUND(amount_in_usd, 2) AS amount_in_usd
 FROM POC.PUBLIC.NCP_SILVER_V2
-WHERE transaction_type IN ('auth', 'sale', 'auth3d', 'initauth3d', 'settle')
+WHERE UPPER(transaction_type) IN ('AUTH', 'SALE', 'AUTH3D', 'INITAUTH3D', 'SETTLE')
 ORDER BY transaction_type, transaction_main_id
 LIMIT 5;
 
@@ -266,12 +261,12 @@ SELECT 'SF - Transaction Logic Deep Dive' AS test_type,
        COUNT(*) AS count,
        COUNT(CASE WHEN transaction_result_id = '1006' THEN 1 END) AS success_1006_count,
        COUNT(CASE WHEN transaction_result_id = '1008' THEN 1 END) AS decline_1008_count,
-       -- Status flag validation per transaction type
-       COUNT(CASE WHEN transaction_type = 'auth' AND auth_status IS NOT NULL THEN 1 END) AS auth_status_populated,
-       COUNT(CASE WHEN transaction_type = 'sale' AND sale_status IS NOT NULL THEN 1 END) AS sale_status_populated,
-       COUNT(CASE WHEN transaction_type = 'auth3d' AND auth_3d_status IS NOT NULL THEN 1 END) AS auth3d_status_populated,
-       -- Conditional logic validation
-       COUNT(CASE WHEN transaction_type = 'auth3d' AND is_sale_3d_auth_3d IS NOT NULL THEN 1 END) AS conditional_copies_populated
+       -- Status flag validation per transaction type (FIXED CASE SENSITIVITY)
+       COUNT(CASE WHEN UPPER(transaction_type) = 'AUTH' AND auth_status IS NOT NULL THEN 1 END) AS auth_status_populated,
+       COUNT(CASE WHEN UPPER(transaction_type) = 'SALE' AND sale_status IS NOT NULL THEN 1 END) AS sale_status_populated,
+       COUNT(CASE WHEN UPPER(transaction_type) = 'AUTH3D' AND auth_3d_status IS NOT NULL THEN 1 END) AS auth3d_status_populated,
+       -- Conditional logic validation (FIXED CASE SENSITIVITY)
+       COUNT(CASE WHEN UPPER(transaction_type) = 'AUTH3D' AND is_sale_3d_auth_3d IS NOT NULL THEN 1 END) AS conditional_copies_populated
 FROM POC.PUBLIC.NCP_SILVER_V2
 GROUP BY transaction_type
 ORDER BY transaction_type;
