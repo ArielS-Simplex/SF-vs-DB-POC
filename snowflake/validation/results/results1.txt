@@ -1,0 +1,80 @@
+TEST_TYPE	TOTAL_ROWS	UNIQUE_TRANSACTIONS	MIN_DATE	MAX_DATE
+SF - Row Count Check	12686818	12686818	2025-09-05 00:00:00.017	2025-09-05 23:59:59.997
+
+
+test_type	total_rows	unique_transactions	min_date	max_date
+DB - Row Count Check	12686818	12686818	2025-09-05T00:00:00.017	2025-09-05T23:59:59.997
+
+
+TEST_TYPE	TOTAL_ROWS	INIT_STATUS_POPULATED	AUTH_3D_STATUS_POPULATED	SALE_STATUS_POPULATED	AUTH_STATUS_POPULATED	SETTLE_STATUS_POPULATED	VERIFY_AUTH_3D_STATUS_POPULATED
+SF - Status Flags Validation	12686818	2784126	1574187	4347039	1847283	1445673	50093
+
+test_type	total_rows	init_status_populated	auth_3d_status_populated	sale_status_populated	auth_status_populated	settle_status_populated	verify_auth_3d_status_populated
+DB - Status Flags Validation	12686818	2784126	1574187	4347039	1847283	1445673	50093
+
+
+TEST_TYPE	TOTAL_ROWS	AUTH3D_CONDITIONAL_COPIES	AUTH3D_DECISION_COPIES	NON_AUTH3D_NULL_COPIES
+SF - Conditional Copies Validation	12686818	0	0	11112631
+
+
+test_type	total_rows	auth3d_conditional_copies	auth3d_decision_copies	non_auth3d_null_copies
+DB - Conditional Copies Validation	12686818	1571569	1571569	11112631
+
+
+TEST_TYPE	TOTAL_ROWS	CHALLENGE_POPULATED	EXEMPTION_POPULATED	FRICTIONLESS_POPULATED	AUTHENTICATION_POPULATED	CHALLENGE_SUCCESS_COUNT	AUTH_SUCCESS_COUNT
+SF - 3D Secure Analysis Validation	12686818	755248	0	0	756572	600894	600894
+
+test_type	total_rows	challenge_populated	exemption_populated	frictionless_populated	authentication_populated	challenge_success_count	auth_success_count
+DB - 3D Secure Analysis Validation	12686818	755248	2323958	699154	1454707	600894	1290855
+
+
+TEST_TYPE	TOTAL_ROWS	APPROVED_COUNT	NOT_APPROVED_COUNT	DECLINED_COUNT	NOT_DECLINED_COUNT	LOGIC_CONFLICT_COUNT
+SF - Approval/Decline Logic Validation	12686818	5185675	1008647	952149	5242173	0
+
+test_type	total_rows	approved_count	not_approved_count	declined_count	not_declined_count	logic_conflict_count
+DB - Approval/Decline Logic Validation	12686818	5185675	1008647	952149	5242173	0
+
+
+TEST_TYPE	TOTAL_ROWS	CURRENCY_CONVERTED_TRUE	CURRENCY_CONVERTED_FALSE	EEA_TRUE	EEA_FALSE	IS_3D_TRUE	IS_3D_FALSE	IS_VOID_TRUE	LIABILITY_SHIFT_TRUE
+SF - Boolean Conversions Validation	12686818	34165	12652653	8559080	4127738	1515344	11171474	29401	0
+
+
+test_type	total_rows	currency_converted_true	currency_converted_false	eea_true	eea_false	is_3d_true	is_3d_false	is_void_true	liability_shift_true
+DB - Boolean Conversions Validation	12686818	34165	12652653	8559080	4123276	1515344	11171474	29401	2402585
+
+
+TEST_TYPE	TOTAL_ROWS	TEST_CLIENTS_FOUND	NULL_TRANSACTION_IDS	NULL_DATES	NULL_OR_ZERO_AMOUNTS
+SF - Data Quality Check	12686818	0	0	0	133433
+
+
+test_type	total_rows	test_clients_found	null_transaction_ids	null_dates	null_or_zero_amounts
+DB - Data Quality Check	12686818	0	0	0	133433
+
+
+-- LEVEL 9: SAMPLE DATA COMPARISON
+no results
+
+
+TEST_TYPE	TRANSACTION_TYPE	COUNT	SUCCESS_1006_COUNT	DECLINE_1008_COUNT	AUTH_STATUS_POPULATED	SALE_STATUS_POPULATED	AUTH3D_STATUS_POPULATED	CONDITIONAL_COPIES_POPULATED
+SF - Transaction Logic Deep Dive	ABUUPDATE	175	55	108	0	0	0	0
+SF - Transaction Logic Deep Dive	AUTH	1847283	1529497	303127	0	0	0	0
+SF - Transaction Logic Deep Dive	AUTH3D	1574187	1555415	17090	0	0	0	0
+SF - Transaction Logic Deep Dive	CREDIT	608841	595570	11396	0	0	0	0
+SF - Transaction Logic Deep Dive	INITAUTH3D	2784126	2782282	0	0	0	0	0
+SF - Transaction Logic Deep Dive	SALE	4347039	3656178	649022	0	0	0	0
+SF - Transaction Logic Deep Dive	SETTLE	1445673	1444916	12	0	0	0	0
+SF - Transaction Logic Deep Dive	VERIFYAUTH3D	50093	38112	0	0	0	0	0
+SF - Transaction Logic Deep Dive	VOID	29401	29067	97	0	0	0	0
+
+
+
+test_type	transaction_type	count	success_1006_count	decline_1008_count	auth_status_populated	sale_status_populated	auth3d_status_populated	conditional_copies_populated
+DB - Transaction Logic Deep Dive	abu_update	175	55	108	0	0	0	0
+DB - Transaction Logic Deep Dive	auth	1847283	1529497	303127	1847283	0	0	0
+DB - Transaction Logic Deep Dive	auth3d	1574187	1555415	17090	0	0	1574187	1571569
+DB - Transaction Logic Deep Dive	credit	608841	595570	11396	0	0	0	0
+DB - Transaction Logic Deep Dive	initauth3d	2784126	2782282	0	0	0	0	0
+DB - Transaction Logic Deep Dive	sale	4347039	3656178	649022	0	4347039	0	0
+DB - Transaction Logic Deep Dive	settle	1445673	1444916	12	0	0	0	0
+DB - Transaction Logic Deep Dive	verify_auth_3d	50093	38112	0	0	0	0	0
+DB - Transaction Logic Deep Dive	void	29401	29067	97	0	0	0	0

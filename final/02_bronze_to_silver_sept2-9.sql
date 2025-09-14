@@ -75,14 +75,14 @@ SELECT
     END AS auth_3d_status,
     
     CASE 
-        WHEN TRIM(COALESCE(transaction_type, '')) = 'sale' AND TRIM(COALESCE(transaction_result_id, '')) = '1006' THEN TRUE
-        WHEN TRIM(COALESCE(transaction_type, '')) = 'sale' THEN FALSE
+        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'SALE' AND TRIM(COALESCE(transaction_result_id, '')) = '1006' THEN TRUE
+        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'SALE' THEN FALSE
         ELSE NULL
     END AS sale_status,
     
     CASE 
-        WHEN TRIM(COALESCE(transaction_type, '')) = 'auth' AND TRIM(COALESCE(transaction_result_id, '')) = '1006' THEN TRUE
-        WHEN TRIM(COALESCE(transaction_type, '')) = 'auth' THEN FALSE
+        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'AUTH' AND TRIM(COALESCE(transaction_result_id, '')) = '1006' THEN TRUE
+        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'AUTH' THEN FALSE
         ELSE NULL
     END AS auth_status,
     
@@ -93,8 +93,8 @@ SELECT
     END AS settle_status,
     
     CASE 
-        WHEN TRIM(COALESCE(transaction_type, '')) = 'verify_auth_3d' AND TRIM(COALESCE(transaction_result_id, '')) = '1006' THEN TRUE
-        WHEN TRIM(COALESCE(transaction_type, '')) = 'verify_auth_3d' THEN FALSE
+        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'VERIFY_AUTH_3D' AND TRIM(COALESCE(transaction_result_id, '')) = '1006' THEN TRUE
+        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'VERIFY_AUTH_3D' THEN FALSE
         ELSE NULL
     END AS verify_auth_3d_status
 
@@ -139,7 +139,7 @@ SELECT
     
     -- DATABRICKS DERIVED COLUMNS - Conditional copies
     CASE 
-        WHEN TRIM(COALESCE(transaction_type, '')) = 'auth3d' THEN CASE 
+        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'AUTH3D' THEN CASE 
             WHEN LOWER(TRIM(COALESCE(is_sale_3d, ''))) IN ('yes', 'true', '1') THEN TRUE
             WHEN LOWER(TRIM(COALESCE(is_sale_3d, ''))) IN ('no', 'false', '0', '') THEN FALSE
             ELSE NULL
@@ -148,7 +148,7 @@ SELECT
     END AS is_sale_3d_auth_3d,
     
     CASE 
-        WHEN TRIM(COALESCE(transaction_type, '')) = 'auth3d' THEN CASE 
+        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'AUTH3D' THEN CASE 
             WHEN LOWER(TRIM(COALESCE(manage_3d_decision, ''))) IN ('yes', 'true', '1') THEN TRUE
             WHEN LOWER(TRIM(COALESCE(manage_3d_decision, ''))) IN ('no', 'false', '0', '') THEN FALSE
             ELSE NULL

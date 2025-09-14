@@ -112,11 +112,11 @@ FROM deduplicated_data;
 SELECT 
     'SNOWFLAKE_BOOLEAN_DIST' AS source,
     'is_void' AS field_name,
-    is_void AS field_value,
+    CAST(is_void AS STRING) AS field_value,
     COUNT(*) AS record_count,
     ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER(), 2) AS percentage
 FROM POC.PUBLIC.NCP_SILVER_V2
-WHERE DATE(transaction_date) IN ('2025-09-05', '2025-09-06', '2025-09-08')
+WHERE DATE(transaction_date) IN ('2025-09-05')
 GROUP BY is_void
 UNION ALL
 SELECT 
@@ -126,8 +126,28 @@ SELECT
     COUNT(*) AS record_count,
     ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER(), 2) AS percentage
 FROM POC.PUBLIC.NCP_SILVER_V2
-WHERE DATE(transaction_date) IN ('2025-09-05', '2025-09-06', '2025-09-08')
+WHERE DATE(transaction_date) IN ('2025-09-05')
 GROUP BY is_3d
+UNION ALL
+SELECT 
+    'SNOWFLAKE_BOOLEAN_DIST' AS source,
+    'is_approved' AS field_name,
+    CAST(is_approved AS STRING) AS field_value,
+    COUNT(*) AS record_count,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER(), 2) AS percentage
+FROM POC.PUBLIC.NCP_SILVER_V2
+WHERE DATE(transaction_date) IN ('2025-09-05')
+GROUP BY is_approved
+UNION ALL
+SELECT 
+    'SNOWFLAKE_BOOLEAN_DIST' AS source,
+    'is_successful_challenge' AS field_name,
+    CAST(is_successful_challenge AS STRING) AS field_value,
+    COUNT(*) AS record_count,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER(), 2) AS percentage
+FROM POC.PUBLIC.NCP_SILVER_V2
+WHERE DATE(transaction_date) IN ('2025-09-05')
+GROUP BY is_successful_challenge
 ORDER BY source, field_name, field_value;
 
 -- DATABRICKS: Boolean field distributions (run on Databricks - Sept 5, 6, 8 ONLY)
@@ -135,7 +155,7 @@ ORDER BY source, field_name, field_value;
 WITH deduplicated_data AS (
   SELECT *
   FROM ncp.silver
-  WHERE DATE(transaction_date) IN ('2025-09-05', '2025-09-06', '2025-09-08')
+  WHERE DATE(transaction_date) IN ('2025-09-05')
     AND transaction_main_id IS NOT NULL 
     AND transaction_date IS NOT NULL
     AND LOWER(TRIM(multi_client_name)) NOT IN (

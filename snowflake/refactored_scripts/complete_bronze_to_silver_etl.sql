@@ -5,7 +5,7 @@
 -- ================================================
 
 -- Process transactions for 2025-09-05 (matching Databricks reference)
-CREATE OR REPLACE TABLE POC.PUBLIC.NCP_SILVER_V3 AS
+CREATE OR REPLACE TABLE POC.PUBLIC.NCP_SILVER_V2 AS
 
 WITH base_data AS (
     SELECT *
@@ -62,8 +62,8 @@ status_flags_calculated AS (
            
            -- 3D Secure success analysis (lines 154-179 in Databricks)
            CASE 
-               WHEN \"3d_flow_status\" = '3d_success' THEN 'true'
-               WHEN \"3d_flow_status\" IN ('3d_failure', '3d_wasnt_completed') THEN 'false'
+               WHEN "3d_flow_status" = '3d_success' THEN 'true'
+               WHEN "3d_flow_status" IN ('3d_failure', '3d_wasnt_completed') THEN 'false'
            END AS is_successful_challenge,
            
            CASE 
@@ -77,7 +77,7 @@ status_flags_calculated AS (
            END AS is_successful_frictionless,
            
            CASE 
-               WHEN \"3d_flow_status\" = '3d_success' 
+               WHEN "3d_flow_status" = '3d_success' 
                     OR (authentication_flow = 'frictionless' AND status = '40') THEN 'true'
                WHEN (acs_url IS NOT NULL AND authentication_flow != 'exemption')
                     OR (authentication_flow = 'frictionless' AND status != '40') THEN 'false'
@@ -118,11 +118,11 @@ SELECT
     final_transaction_status,
     
     -- 3D Secure flow columns
-    \"3d_flow_status\",
+    "3d_flow_status",
     challenge_preference,
     preference_reason,
     authentication_flow,
-    \"3d_flow\",
+    "3d_flow",
     status,
     acs_url,
     acs_res_authentication_status,
