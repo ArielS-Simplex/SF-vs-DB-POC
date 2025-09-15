@@ -1,109 +1,37 @@
 -- ==============================================================================
--- PHASE 1-3: COMPLETE DATABRICKS ETL PARITY
--- Features: Checkpoint Management + Incremental Processing + MERGE Operations
--- Added: Metadata table, incremental filtering, and MERGE UPSERT logic
--- Status: Complete 173+ column parity + true Databricks incremental processing
+-- SIMPLE COPY-PASTE TEMPLATE - COPY YOUR enhanced_working_etl.sql HERE
 -- ==============================================================================
 
--- ==============================================================================
--- 1. CREATE METADATA TABLE FOR CHECKPOINT MANAGEMENT
--- ==============================================================================
+-- 1. Setup checkpoint (one-time)
+CREATE TABLE IF NOT EXISTS POC.PUBLIC.ETL_CHECKPOINT (
+    table_name VARCHAR(50) PRIMARY KEY,
+    last_processed_timestamp TIMESTAMP_NTZ DEFAULT '2025-09-01 00:00:00'
+);
 
-CREATE TABLE IF NOT EXISTS POC.PUBLIC.etl_metadata (
-    table_name VARCHAR(100) PRIMARY KEY,
-    checkpoint_time TIMESTAMP,
-    last_run_timestamp TIMESTAMP,
-    last_run_status VARCHAR(50),
-    records_processed INTEGER,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+INSERT INTO POC.PUBLIC.ETL_CHECKPOINT (table_name, last_processed_timestamp)
+SELECT 'NCP_SILVER_V2', '2025-09-01 00:00:00'::TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM POC.PUBLIC.ETL_CHECKPOINT WHERE table_name = 'NCP_SILVER_V2');
+
+-- 2. Get checkpoint
+SET last_checkpoint = (
+    SELECT last_processed_timestamp 
+    FROM POC.PUBLIC.ETL_CHECKPOINT 
+    WHERE table_name = 'NCP_SILVER_V2'
 );
 
 -- ==============================================================================
--- 2. INITIALIZE CHECKPOINT (If not exists)
+-- 3. COPY YOUR COMPLETE enhanced_working_etl.sql LOGIC HERE
 -- ==============================================================================
 
-MERGE INTO POC.PUBLIC.etl_metadata AS target
-USING (
-    SELECT 'NCP_SILVER_V4' AS table_name,
-           '2025-09-09 00:00:00'::TIMESTAMP AS checkpoint_time,  -- Before bronze data (2025-09-10)
-           CURRENT_TIMESTAMP() AS last_run_timestamp,
-           'INITIALIZING' AS last_run_status,
-           0 AS records_processed
-) AS source
-ON target.table_name = source.table_name
-WHEN NOT MATCHED THEN
-    INSERT (table_name, checkpoint_time, last_run_timestamp, last_run_status, records_processed)
-    VALUES (source.table_name, source.checkpoint_time, source.last_run_timestamp, source.last_run_status, source.records_processed);
+-- STEP 1: Create staging table
+DROP TABLE IF EXISTS POC.PUBLIC.NCP_SILVER_V2_STAGING;
+CREATE TABLE POC.PUBLIC.NCP_SILVER_V2_STAGING AS
 
--- ==============================================================================
--- 3. GET CURRENT CHECKPOINT & SET VARIABLES
--- ==============================================================================
+-- STEP 2: PASTE LINES 27-464 FROM enhanced_working_etl.sql HERE
+-- COPY FROM enhanced_working_etl.sql line 27 to line 464
+-- Just add one line: WHERE inserted_at > $last_checkpoint
 
-SET checkpoint_time = (
-    SELECT checkpoint_time 
-    FROM POC.PUBLIC.etl_metadata 
-    WHERE table_name = 'NCP_SILVER_V4'
-);
-
--- Variables for this run
-SET DATE_RANGE_START = '2025-09-05';
-SET DATE_RANGE_END = '2025-09-05';
-SET SOURCE_TABLE = 'POC.PUBLIC.NCP_BRONZE_V2';  -- Source is V2
-SET TARGET_TABLE = 'POC.PUBLIC.NCP_SILVER_V4';  -- Target is V4
-SET run_timestamp = CURRENT_TIMESTAMP();
-
--- ==============================================================================
--- 4. UPDATE CHECKPOINT STATUS - STARTING
--- ==============================================================================
-
-UPDATE POC.PUBLIC.etl_metadata 
-SET last_run_timestamp = $run_timestamp,
-    last_run_status = 'RUNNING',
-    updated_at = CURRENT_TIMESTAMP()
-WHERE table_name = 'NCP_SILVER_V4';
-
--- ==============================================================================
--- 5. INCREMENTAL PROCESSING CHECK (DATABRICKS EQUIVALENT)
--- ==============================================================================
-
--- Check how many new records since checkpoint
-SET new_records_count = (
-    SELECT COUNT(*) 
-    FROM IDENTIFIER($SOURCE_TABLE)
-    WHERE inserted_at > $checkpoint_time
-      AND DATE(transaction_date) BETWEEN $DATE_RANGE_START AND $DATE_RANGE_END
-);
-
-SELECT 'INCREMENTAL PROCESSING CHECK' AS status,
-       $checkpoint_time AS current_checkpoint,
-       $new_records_count AS new_records_to_process,
-       CASE WHEN $new_records_count > 0 THEN 'PROCESSING NEW DATA' ELSE 'NO NEW DATA' END AS action;
-
--- ==============================================================================
--- 6. DATABRICKS-STYLE INCREMENTAL PROCESSING (FIRST RUN vs SUBSEQUENT RUNS)
--- ==============================================================================
-
--- Variables are set above, proceed with processing
-
--- ==============================================================================
--- 7. CONDITIONAL PROCESSING: FIRST RUN vs INCREMENTAL RUN
--- ==============================================================================
-
--- Show current processing status
-SELECT 'Processing Decision' AS status,
-       $new_records_count AS new_records_to_process,
-       CASE 
-         WHEN $new_records_count = 0 THEN 'NO NEW DATA - TABLE WILL BE EMPTY'
-         ELSE 'PROCESSING NEW DATA'
-       END AS processing_mode;
-
--- ==============================================================================
--- 8. UNIFIED PROCESSING: MERGE OPERATION (Handles both first run and incremental)
--- ==============================================================================
-
--- Create table with full schema if it doesn't exist (first run)
-CREATE TABLE IF NOT EXISTS IDENTIFIER($TARGET_TABLE) AS
+-- PLACEHOLDER - REPLACE WITH YOUR COMPLETE COPY-PASTE:
 WITH deduped_bronze AS (
     SELECT 
         *,
@@ -111,10 +39,10 @@ WITH deduped_bronze AS (
             PARTITION BY TRANSACTION_MAIN_ID, TRANSACTION_DATE 
             ORDER BY inserted_at DESC
         ) AS rn
-    FROM IDENTIFIER($SOURCE_TABLE)
-    WHERE inserted_at > $checkpoint_time  -- ⭐ INCREMENTAL FILTER - Only process NEW data
-      AND DATE(transaction_date) >= $DATE_RANGE_START
-      AND DATE(transaction_date) <= $DATE_RANGE_END
+    FROM POC.PUBLIC.NCP_BRONZE_V2
+    WHERE inserted_at > $last_checkpoint  -- INCREMENTAL FILTER
+      AND DATE(transaction_date) >= '2025-09-05'
+      AND DATE(transaction_date) <= '2025-09-05'
       AND transaction_main_id IS NOT NULL 
       AND transaction_date IS NOT NULL
       AND LOWER(TRIM(multi_client_name)) NOT IN (
@@ -539,160 +467,31 @@ SELECT
     COALESCE(TRY_CAST(approved_amount_in_usd AS DECIMAL(18,2)), 0) AS approved_amount_in_usd,
     COALESCE(TRY_CAST(original_currency_amount AS DECIMAL(18,2)), 0) AS original_currency_amount,
     
-    -- ETL Processing metadata
-    $run_timestamp AS etl_processed_at,
-    
     -- Metadata (keep at the end)
     inserted_at
     
-FROM status_flags_calculated
-WHERE FALSE; -- Creates empty table with correct schema on first run
+FROM status_flags_calculated;
 
--- Insert new records only (true incremental processing)
-INSERT INTO IDENTIFIER($TARGET_TABLE)
-SELECT * FROM (
-WITH deduped_bronze AS (
-    SELECT 
-        *,
-        ROW_NUMBER() OVER (
-            PARTITION BY TRANSACTION_MAIN_ID, TRANSACTION_DATE 
-            ORDER BY inserted_at DESC
-        ) AS rn
-    FROM IDENTIFIER($SOURCE_TABLE)
-    WHERE inserted_at > $checkpoint_time  -- Only NEW records
-      AND DATE(transaction_date) >= $DATE_RANGE_START
-      AND DATE(transaction_date) <= $DATE_RANGE_END
-      AND transaction_main_id IS NOT NULL 
-      AND transaction_date IS NOT NULL
-      AND LOWER(TRIM(multi_client_name)) NOT IN (
-        'test multi', 
-        'davidh test2 multi', 
-        'ice demo multi', 
-        'monitoring client pod2 multi'
-      )
-),
-filtered_data AS (
-    SELECT * FROM deduped_bronze WHERE rn = 1
-),
-status_flags_calculated AS (
-SELECT 
-    -- Keep all original columns
-    *,
-    
-    -- DATABRICKS DERIVED COLUMNS - Transaction result status flags (FIXED CASE SENSITIVITY)
-    CASE 
-        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'INITAUTH3D' AND TRIM(COALESCE(transaction_result_id, '')) = '1006' THEN TRUE
-        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'INITAUTH3D' THEN FALSE
-        ELSE NULL
-    END AS init_status,
-    
-    CASE 
-        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'AUTH3D' AND TRIM(COALESCE(transaction_result_id, '')) = '1006' THEN TRUE
-        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'AUTH3D' THEN FALSE
-        ELSE NULL
-    END AS auth_3d_status,
-    
-    CASE 
-        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'SALE' AND TRIM(COALESCE(transaction_result_id, '')) = '1006' THEN TRUE
-        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'SALE' THEN FALSE
-        ELSE NULL
-    END AS sale_status,
-    
-    CASE 
-        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'AUTH' AND TRIM(COALESCE(transaction_result_id, '')) = '1006' THEN TRUE
-        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'AUTH' THEN FALSE
-        ELSE NULL
-    END AS auth_status,
-    
-    CASE 
-        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'SETTLE' AND TRIM(COALESCE(transaction_result_id, '')) = '1006' THEN TRUE
-        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'SETTLE' THEN FALSE
-        ELSE NULL
-    END AS settle_status,
-    
-    CASE 
-        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'VERIFY_AUTH_3D' AND TRIM(COALESCE(transaction_result_id, '')) = '1006' THEN TRUE
-        WHEN UPPER(TRIM(COALESCE(transaction_type, ''))) = 'VERIFY_AUTH_3D' THEN FALSE
-        ELSE NULL
-    END AS verify_auth_3d_status,
-    
-    -- DATABRICKS DERIVED COLUMNS - Conditional copies
-    CASE 
-        WHEN LOWER(TRIM(COALESCE(transaction_type, ''))) = 'auth3d' THEN CASE 
-            WHEN LOWER(TRIM(COALESCE(is_sale_3d, ''))) IN ('yes', 'true', '1') THEN TRUE
-            WHEN LOWER(TRIM(COALESCE(is_sale_3d, ''))) IN ('no', 'false', '0', '') THEN FALSE
-            ELSE NULL
-        END
-        ELSE NULL
-    END AS is_sale_3d_auth_3d,
-    
-    CASE 
-        WHEN LOWER(TRIM(COALESCE(transaction_type, ''))) = 'auth3d' THEN CASE 
-            WHEN LOWER(TRIM(COALESCE(manage_3d_decision, ''))) IN ('yes', 'true', '1') THEN TRUE
-            WHEN LOWER(TRIM(COALESCE(manage_3d_decision, ''))) IN ('no', 'false', '0', '') THEN FALSE
-            ELSE NULL
-        END
-        ELSE NULL
-    END AS manage_3d_decision_auth_3d
+-- ==============================================================================
+-- 4. MERGE STAGING INTO TARGET (Auto-handles all columns)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS POC.PUBLIC.NCP_SILVER_V2 LIKE POC.PUBLIC.NCP_SILVER_V2_STAGING;
 
-FROM filtered_data
+MERGE INTO POC.PUBLIC.NCP_SILVER_V2 AS target
+USING POC.PUBLIC.NCP_SILVER_V2_STAGING AS source
+ON target.transaction_main_id = source.transaction_main_id 
+   AND target.transaction_date = source.transaction_date
+WHEN MATCHED THEN UPDATE SET *
+WHEN NOT MATCHED THEN INSERT *;
+
+-- 5. Update checkpoint
+UPDATE POC.PUBLIC.ETL_CHECKPOINT 
+SET last_processed_timestamp = (
+    SELECT COALESCE(MAX(inserted_at), last_processed_timestamp) 
+    FROM POC.PUBLIC.NCP_BRONZE_V2 
+    WHERE inserted_at > $last_checkpoint
 )
+WHERE table_name = 'NCP_SILVER_V2';
 
-SELECT 
-    -- Core transaction fields
-    transaction_main_id,
-    transaction_date,
-    
-    -- Boolean normalization - EXACT Databricks logic using actual columns
-    CASE 
-        WHEN LOWER(TRIM(COALESCE(is_void, ''))) IN ('yes', 'true', '1') THEN TRUE
-        WHEN LOWER(TRIM(COALESCE(is_void, ''))) IN ('no', 'false', '0', '') THEN FALSE
-        ELSE NULL
-    END AS is_void,
-    
-    CASE 
-        WHEN LOWER(TRIM(COALESCE(is_sale_3d, ''))) IN ('yes', 'true', '1') THEN TRUE
-        WHEN LOWER(TRIM(COALESCE(is_sale_3d, ''))) IN ('no', 'false', '0', '') THEN FALSE
-        ELSE NULL
-    END AS is_sale_3d,
-    
-    -- ETL Processing metadata
-    $run_timestamp AS etl_processed_at,
-    
-    -- Metadata (keep at the end)
-    inserted_at
-    
-FROM status_flags_calculated
-);
-
--- ==============================================================================
--- 9. UPDATE CHECKPOINT STATUS - SUCCESS WITH INCREMENTAL CHECKPOINT
--- ==============================================================================
-
-SET records_processed = (SELECT COUNT(*) FROM IDENTIFIER($TARGET_TABLE));
-
--- Get the latest inserted_at timestamp for next checkpoint
-SET new_checkpoint_time = (
-    SELECT COALESCE(MAX(inserted_at), $checkpoint_time)
-    FROM IDENTIFIER($TARGET_TABLE)
-);
-
-UPDATE POC.PUBLIC.etl_metadata 
-SET checkpoint_time = $new_checkpoint_time,  -- ⭐ CRITICAL: Advance checkpoint for next run
-    last_run_status = 'SUCCESS',
-    records_processed = $records_processed,
-    updated_at = CURRENT_TIMESTAMP()
-WHERE table_name = 'NCP_SILVER_V4';
-
--- ==============================================================================
--- 10. CHECKPOINT VERIFICATION
--- ==============================================================================
-
-SELECT 'CHECKPOINT UPDATE VERIFICATION' AS status,
-       table_name,
-       checkpoint_time,
-       last_run_status,
-       records_processed,
-       'TRUE DATABRICKS INCREMENTAL PROCESSING - MERGE Operations' AS phase
-FROM POC.PUBLIC.etl_metadata 
-WHERE table_name = 'NCP_SILVER_V4';
+-- 6. Cleanup
+DROP TABLE POC.PUBLIC.NCP_SILVER_V2_STAGING;
