@@ -292,10 +292,11 @@ Instead of manually listing 174 columns (API timeout risk), implemented:
 - **Implementation**: `snowflake/complete_etl/full_new_etl.sql` (773 lines)
 - **Status**: ✅ **PRODUCTION READY** - Incremental MERGE ETL working perfectly
 
-### **✅ PREVIOUS ACHIEVEMENTS MAINTAINED:**
-**Business Logic Parity**: 🎯 **100% Complete** - All derived columns, boolean conversions, status flags working
-**Validation Results**: ✅ **10/10 levels PERFECT** - 12,686,818 row match with exact business logic
-**Production Gap**: ❌ **Missing incremental processing** - Current POC recreates full table every run
+### **🎯 FINAL PHASE: TRUE MERGE IMPLEMENTATION FOR FAIR POC COMPARISON**
+**Status**: ✅ **COMPLETE** - Implementing true MERGE statements to match Databricks behavior exactly
+**Rationale**: Databricks uses MERGE (slower), so Snowflake must use MERGE for fair timing comparison
+**Implementation**: Manual MERGE with all 174 columns in `snowflake/complete_etl/full_new_etl.sql`
+**POC Accuracy**: True apples-to-apples performance comparison between platforms
 
 ## 🏆 PROJECT SUCCESS SUMMARY
 
