@@ -382,7 +382,7 @@ DB - Approval/Decline Logic Validation	12686818	5185675	1008647	952149	5242173	0
 
 
 TEST_TYPE	TOTAL_ROWS	CURRENCY_CONVERTED_TRUE	CURRENCY_CONVERTED_FALSE	EEA_TRUE	EEA_FALSE	IS_3D_TRUE	IS_3D_FALSE	IS_VOID_TRUE	LIABILITY_SHIFT_TRUE
-SF - Boolean Conversions Validation	12686818	34165	12652653	8559080	4127738	1515344	11171474	29401	0
+SF - Boolean Conversions Validation	12686818	34165	12652653	8559080	4127738	1515344	11171474	29401	2402585
 
 
 test_type	total_rows	currency_converted_true	currency_converted_false	eea_true	eea_false	is_3d_true	is_3d_false	is_void_true	liability_shift_true

@@ -3,15 +3,15 @@
 -- Added missing columns for 173-column parity with current ETL
 -- Status: Working row counts + business logic + expanded schema
 -- ==============================================================================
--- BRONZE TO SILVER ETL - SEPTEMBER 5, 2025 (1 DAY)
--- Processing single day with complete 143-column Databricks parity
--- V2 VERSION - Protects existing tables
+-- BRONZE TO SILVER ETL - SEPTEMBER 2-8, 2025 (7 DAYS)
+-- Processing 7-day range with complete 143-column Databricks parity
+-- V2_7_DAYS VERSION - Multi-day processing
 -- ==============================================================================
 
-SET DATE_RANGE_START = '2025-09-05';
-SET DATE_RANGE_END = '2025-09-05';
+SET DATE_RANGE_START = '2025-09-02';
+SET DATE_RANGE_END = '2025-09-08';
 SET SOURCE_TABLE = 'POC.PUBLIC.NCP_BRONZE_V2';
-SET TARGET_TABLE = 'POC.PUBLIC.NCP_SILVER_V2';
+SET TARGET_TABLE = 'POC.PUBLIC.NCP_SILVER_V2_7_DAYS';
 
 -- ==============================================================================
 -- 1. CLEAN SLATE - DROP AND RECREATE TARGET TABLE

@@ -1,20 +1,87 @@
 -- ==============================================================================
--- ENHANCED WORKING ETL - Based on final/02_bronze_to_silver_sept2-9.sql
--- Added missing columns for 173-column parity with current ETL
--- Status: Working row counts + business logic + expanded schema
--- ==============================================================================
--- BRONZE TO SILVER ETL - SEPTEMBER 5, 2025 (1 DAY)
--- Processing single day with complete 143-column Databricks parity
--- V2 VERSION - Protects existing tables
+-- PHASE 1: CHECKPOINT MANAGEMENT ETL
+-- Based on: 01_baseline_etl.sql + Databricks checkpoint functionality
+-- Added: Metadata table for tracking last processed timestamps
+-- Status: Complete 173+ column parity + checkpoint tracking
 -- ==============================================================================
 
+-- ==============================================================================
+-- 1. CREATE METADATA TABLE FOR CHECKPOINT MANAGEMENT
+-- ==============================================================================
+
+CREATE TABLE IF NOT EXISTS POC.PUBLIC.etl_metadata (
+    table_name VARCHAR(100) PRIMARY KEY,
+    checkpoint_time TIMESTAMP,
+    last_run_timestamp TIMESTAMP,
+    last_run_status VARCHAR(50),
+    records_processed INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+);
+
+-- ==============================================================================
+-- 2. INITIALIZE CHECKPOINT (If not exists)
+-- ==============================================================================
+
+MERGE INTO POC.PUBLIC.etl_metadata AS target
+USING (
+    SELECT 'NCP_SILVER_V4' AS table_name,
+           '1900-01-01 00:00:00'::TIMESTAMP AS checkpoint_time,
+           CURRENT_TIMESTAMP() AS last_run_timestamp,
+           'INITIALIZING' AS last_run_status,
+           0 AS records_processed
+) AS source
+ON target.table_name = source.table_name
+WHEN NOT MATCHED THEN
+    INSERT (table_name, checkpoint_time, last_run_timestamp, last_run_status, records_processed)
+    VALUES (source.table_name, source.checkpoint_time, source.last_run_timestamp, source.last_run_status, source.records_processed);
+
+-- ==============================================================================
+-- 3. GET CURRENT CHECKPOINT & SET VARIABLES
+-- ==============================================================================
+
+SET checkpoint_time = (
+    SELECT checkpoint_time 
+    FROM POC.PUBLIC.etl_metadata 
+    WHERE table_name = 'NCP_SILVER_V4'
+);
+
+-- Variables for this run
 SET DATE_RANGE_START = '2025-09-05';
 SET DATE_RANGE_END = '2025-09-05';
-SET SOURCE_TABLE = 'POC.PUBLIC.NCP_BRONZE_V2';
-SET TARGET_TABLE = 'POC.PUBLIC.NCP_SILVER_V2';
+SET SOURCE_TABLE = 'POC.PUBLIC.NCP_BRONZE_V2';  -- Source is V2
+SET TARGET_TABLE = 'POC.PUBLIC.NCP_SILVER_V4';  -- Target is V4
+SET run_timestamp = CURRENT_TIMESTAMP();
 
 -- ==============================================================================
--- 1. CLEAN SLATE - DROP AND RECREATE TARGET TABLE
+-- 4. UPDATE CHECKPOINT STATUS - STARTING
+-- ==============================================================================
+
+UPDATE POC.PUBLIC.etl_metadata 
+SET last_run_timestamp = $run_timestamp,
+    last_run_status = 'RUNNING',
+    updated_at = CURRENT_TIMESTAMP()
+WHERE table_name = 'NCP_SILVER_V4';
+
+-- ==============================================================================
+-- 5. INCREMENTAL PROCESSING LOGIC (CRITICAL DATABRICKS FEATURE)
+-- ==============================================================================
+
+-- Check how many new records since checkpoint
+SET new_records_count = (
+    SELECT COUNT(*) 
+    FROM IDENTIFIER($SOURCE_TABLE)
+    WHERE inserted_at > $checkpoint_time
+      AND DATE(transaction_date) BETWEEN $DATE_RANGE_START AND $DATE_RANGE_END
+);
+
+SELECT 'INCREMENTAL PROCESSING CHECK' AS status,
+       $checkpoint_time AS current_checkpoint,
+       $new_records_count AS new_records_to_process,
+       CASE WHEN $new_records_count > 0 THEN 'PROCESSING NEW DATA' ELSE 'NO NEW DATA' END AS action;
+
+-- ==============================================================================
+-- 6. MAIN ETL LOGIC - INCREMENTAL PROCESSING
 -- ==============================================================================
 
 DROP TABLE IF EXISTS IDENTIFIER($TARGET_TABLE);
@@ -32,7 +99,8 @@ WITH deduped_bronze AS (
             ORDER BY inserted_at DESC
         ) AS rn
     FROM IDENTIFIER($SOURCE_TABLE)
-    WHERE DATE(transaction_date) >= $DATE_RANGE_START
+    WHERE inserted_at > $checkpoint_time  -- ⭐ INCREMENTAL FILTER - Only process NEW data
+      AND DATE(transaction_date) >= $DATE_RANGE_START
       AND DATE(transaction_date) <= $DATE_RANGE_END
       AND transaction_main_id IS NOT NULL 
       AND transaction_date IS NOT NULL
@@ -458,8 +526,43 @@ SELECT
     COALESCE(TRY_CAST(approved_amount_in_usd AS DECIMAL(18,2)), 0) AS approved_amount_in_usd,
     COALESCE(TRY_CAST(original_currency_amount AS DECIMAL(18,2)), 0) AS original_currency_amount,
     
+    -- ETL Processing metadata
+    $run_timestamp AS etl_processed_at,
+    
     -- Metadata (keep at the end)
     inserted_at
     
 FROM status_flags_calculated
 ORDER BY transaction_date, transaction_main_id;
+
+-- ==============================================================================
+-- 6. UPDATE CHECKPOINT STATUS - SUCCESS
+-- ==============================================================================
+
+SET records_processed = (SELECT COUNT(*) FROM IDENTIFIER($TARGET_TABLE));
+
+-- Get the latest inserted_at timestamp for next checkpoint
+SET new_checkpoint_time = (
+    SELECT COALESCE(MAX(inserted_at), $checkpoint_time)
+    FROM IDENTIFIER($TARGET_TABLE)
+);
+
+UPDATE POC.PUBLIC.etl_metadata 
+SET checkpoint_time = $new_checkpoint_time,  -- ⭐ CRITICAL: Advance checkpoint for next run
+    last_run_status = 'SUCCESS',
+    records_processed = $records_processed,
+    updated_at = CURRENT_TIMESTAMP()
+WHERE table_name = 'NCP_SILVER_V4';
+
+-- ==============================================================================
+-- 7. CHECKPOINT VERIFICATION
+-- ==============================================================================
+
+SELECT 'CHECKPOINT UPDATE VERIFICATION' AS status,
+       table_name,
+       checkpoint_time,
+       last_run_status,
+       records_processed,
+       'Phase 2: Incremental Processing Complete' AS phase
+FROM POC.PUBLIC.etl_metadata 
+WHERE table_name = 'NCP_SILVER_V4';
