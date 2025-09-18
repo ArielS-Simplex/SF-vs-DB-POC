@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snowflake ETL Cost Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏔️ Snowflake ETL Cost Calculator</h1>
+            <p>Interactive cost analysis tool for Databricks to Snowflake ETL migration</p>
+        </header>
+
+        <div class="dashboard">
+            <!-- Current POC Results Section -->
+            <section class="card">
+                <h2>📊 Current POC Results</h2>
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <h3>Records Processed</h3>
+                        <span class="value">12,686,818</span>
+                    </div>
+                    <div class="metric">
+                        <h3>Total Queries</h3>
+                        <span class="value">28</span>
+                    </div>
+                    <div class="metric">
+                        <h3>Execution Time</h3>
+                        <span class="value">3.24 min</span>
+                    </div>
+                    <div class="metric">
+                        <h3>Credits Used</h3>
+                        <span class="value">0.0017</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interactive Calculator Section -->
+            <section class="card">
+                <h2>🧮 Cost Calculator</h2>
+                <div class="calculator">
+                    <div class="input-group">
+                        <label for="records">Number of Records:</label>
+                        <input type="number" id="records" value="12686818" min="1">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="warehouse-size">Warehouse Size:</label>
+                        <select id="warehouse-size">
+                            <option value="x-small">X-Small</option>
+                            <option value="small">Small</option>
+                            <option value="medium">Medium</option>
+                            <option value="large">Large</option>
+                            <option value="x-large">X-Large</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="edition">Snowflake Edition:</label>
+                        <select id="edition">
+                            <option value="standard">Standard ($2.00/credit)</option>
+                            <option value="enterprise">Enterprise ($3.00/credit)</option>
+                            <option value="business-critical">Business Critical ($4.00/credit)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="frequency">ETL Frequency:</label>
+                        <select id="frequency">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+
+                    <button onclick="calculateCosts()">Calculate Costs</button>
+                </div>
+
+                <div class="results" id="results">
+                    <!-- Results will be populated here -->
+                </div>
+            </section>
+
+            <!-- Cost Breakdown Chart -->
+            <section class="card">
+                <h2>📈 Cost Breakdown</h2>
+                <div class="chart-container">
+                    <canvas id="costChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Pipeline Stage Analysis -->
+            <section class="card">
+                <h2>🔄 Pipeline Stage Analysis</h2>
+                <div class="stage-breakdown">
+                    <div class="stage">
+                        <h3>S3 to Staging</h3>
+                        <div class="stage-metrics">
+                            <span>Queries: 2</span>
+                            <span>Credits: 0.001</span>
+                            <span>Time: 1.23 min</span>
+                        </div>
+                    </div>
+                    <div class="stage">
+                        <h3>Staging to Bronze</h3>
+                        <div class="stage-metrics">
+                            <span>Queries: 2</span>
+                            <span>Credits: 0.0002</span>
+                            <span>Time: 1.94 min</span>
+                        </div>
+                    </div>
+                    <div class="stage">
+                        <h3>Other Operations</h3>
+                        <div class="stage-metrics">
+                            <span>Queries: 24</span>
+                            <span>Credits: 0.0005</span>
+                            <span>Time: 0.06 min</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Comparison Section -->
+            <section class="card">
+                <h2>⚖️ Databricks vs Snowflake</h2>
+                <div class="comparison">
+                    <div class="comparison-item">
+                        <h3>Efficiency Metric</h3>
+                        <p>Credits per Million Records: <strong>0.000138</strong></p>
+                    </div>
+                    <div class="comparison-item">
+                        <h3>Scalability</h3>
+                        <p>Linear scaling with warehouse size adjustments</p>
+                    </div>
+                    <div class="comparison-item">
+                        <h3>Cost Predictability</h3>
+                        <p>Credit-based pricing with transparent consumption</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

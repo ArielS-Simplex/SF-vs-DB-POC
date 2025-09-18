@@ -1,0 +1,53 @@
+# GitHub Pages Configuration for Snowflake ETL Cost Calculator
+
+title: Snowflake ETL Cost Calculator
+description: Interactive cost analysis tool for Databricks to Snowflake ETL migration POC
+author: Data Engineering Team
+email: data-engineering@company.com
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# GitHub Pages specific settings
+github_username: your-github-username
+repository: POC_Snowflake_Databricks
+
+# Enable GitHub Pages
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Exclude files from processing
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles/
+
+# Include additional files
+include:
+  - _pages
+
+# Custom variables
+cost_calculator:
+  version: "1.0.0"
+  last_updated: "2025-09-18"
+  base_metrics:
+    records_processed: 12686818
+    total_queries: 28
+    execution_minutes: 3.24
+    credits_used: 0.0017
+    
+# Navigation (if using a theme that supports it)
+header_pages:
+  - index.html
+
+# Site URL (update with your actual GitHub Pages URL)
+url: "https://your-username.github.io"
+baseurl: "/POC_Snowflake_Databricks"
