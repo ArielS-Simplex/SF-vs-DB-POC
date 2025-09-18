@@ -1,6 +1,6 @@
-// Snowflake ETL Cost Calculator JavaScript
+// Compact Calculator JavaScript
 
-// Base cost rates and warehouse multipliers
+// Cost rates and warehouse multipliers
 const CREDIT_RATES = {
     'standard': 2.00,
     'enterprise': 3.00,
@@ -15,31 +15,32 @@ const WAREHOUSE_MULTIPLIERS = {
     'x-large': 16
 };
 
-// Base metrics from POC results
+// Base metrics from 3-day POC average (more reliable)
 const BASE_METRICS = {
-    records: 12686818,
-    credits: 0.0017,
-    executionMinutes: 3.24,
-    queries: 28
+    records: 12.686818, // millions
+    credits: 0.001715,
+    executionMinutes: 5.66,
+    queries: 27,
+    totalCostUSD: 0.005146
 };
 
-// Chart instance
-let costChart = null;
-
 function calculateCosts() {
-    const records = parseInt(document.getElementById('records').value);
+    const recordsMillions = parseFloat(document.getElementById('records').value);
     const warehouseSize = document.getElementById('warehouse-size').value;
     const edition = document.getElementById('edition').value;
     const frequency = document.getElementById('frequency').value;
     
+    // Update range display
+    document.getElementById('records-value').textContent = `${recordsMillions}M`;
+    
     // Calculate scaling factors
-    const recordsRatio = records / BASE_METRICS.records;
+    const recordsRatio = recordsMillions / BASE_METRICS.records;
     const warehouseMultiplier = WAREHOUSE_MULTIPLIERS[warehouseSize];
     const creditRate = CREDIT_RATES[edition];
     
     // Calculate scaled metrics
     const scaledCredits = BASE_METRICS.credits * recordsRatio * warehouseMultiplier;
-    const scaledExecutionTime = BASE_METRICS.executionMinutes * recordsRatio / warehouseMultiplier;
+    const scaledExecutionTime = BASE_METRICS.executionMinutes * recordsRatio / Math.sqrt(warehouseMultiplier);
     const costPerRun = scaledCredits * creditRate;
     
     // Calculate frequency costs
@@ -47,24 +48,23 @@ function calculateCosts() {
     const monthlyCost = costPerRun * frequencyMultiplier;
     const annualCost = monthlyCost * 12;
     
+    // Efficiency metrics
+    const creditsPerMillion = scaledCredits / recordsMillions;
+    const costPerMillion = costPerRun / recordsMillions;
+    
     // Display results
     displayResults({
-        records,
+        records: recordsMillions,
         credits: scaledCredits,
         executionTime: scaledExecutionTime,
         costPerRun,
         monthlyCost,
         annualCost,
+        creditsPerMillion,
+        costPerMillion,
         warehouseSize,
         edition,
         frequency
-    });
-    
-    // Update chart
-    updateCostChart({
-        costPerRun,
-        monthlyCost,
-        annualCost
     });
 }
 
@@ -80,162 +80,61 @@ function getFrequencyMultiplier(frequency) {
 function displayResults(results) {
     const resultsDiv = document.getElementById('results');
     
+    if (!resultsDiv) {
+        console.error('Results div not found!');
+        return;
+    }
+    
     resultsDiv.innerHTML = `
-        <h3>💰 Cost Estimate Results</h3>
-        <div class="results-grid">
-            <div class="result-item">
-                <label>Records to Process:</label>
-                <span>${results.records.toLocaleString()}</span>
-            </div>
-            <div class="result-item">
-                <label>Estimated Credits:</label>
-                <span>${results.credits.toFixed(6)}</span>
-            </div>
-            <div class="result-item">
-                <label>Execution Time:</label>
-                <span>${results.executionTime.toFixed(2)} minutes</span>
-            </div>
-            <div class="result-item highlight">
-                <label>Cost Per Run:</label>
-                <span>$${results.costPerRun.toFixed(4)}</span>
-            </div>
-            <div class="result-item highlight">
-                <label>Monthly Cost (${results.frequency}):</label>
-                <span>$${results.monthlyCost.toFixed(2)}</span>
-            </div>
-            <div class="result-item highlight">
-                <label>Annual Cost:</label>
-                <span>$${results.annualCost.toFixed(2)}</span>
-            </div>
+        <div class="result-item">
+            <span class="result-label">Records</span>
+            <span class="result-value">${results.records}M</span>
         </div>
-        
-        <div class="efficiency-metrics">
-            <h4>📊 Efficiency Metrics</h4>
-            <p>Credits per Million Records: <strong>${(results.credits / (results.records / 1000000)).toFixed(6)}</strong></p>
-            <p>Cost per Million Records: <strong>$${(results.costPerRun / (results.records / 1000000)).toFixed(4)}</strong></p>
-            <p>Warehouse: ${results.warehouseSize.toUpperCase()} | Edition: ${results.edition.charAt(0).toUpperCase() + results.edition.slice(1)}</p>
+        <div class="result-item">
+            <span class="result-label">Credits</span>
+            <span class="result-value">${results.credits.toFixed(6)}</span>
+        </div>
+        <div class="result-item">
+            <span class="result-label">Runtime</span>
+            <span class="result-value">${results.executionTime.toFixed(1)}m</span>
+        </div>
+        <div class="result-item highlight">
+            <span class="result-label">Cost per Run</span>
+            <span class="result-value">$${results.costPerRun.toFixed(4)}</span>
+        </div>
+        <div class="result-item highlight">
+            <span class="result-label">Monthly (${results.frequency})</span>
+            <span class="result-value">$${results.monthlyCost.toFixed(2)}</span>
+        </div>
+        <div class="result-item highlight">
+            <span class="result-label">Annual</span>
+            <span class="result-value">$${results.annualCost.toFixed(2)}</span>
+        </div>
+        <div class="result-item">
+            <span class="result-label">Credits/Million</span>
+            <span class="result-value">${results.creditsPerMillion.toFixed(6)}</span>
+        </div>
+        <div class="result-item">
+            <span class="result-label">Cost/Million</span>
+            <span class="result-value">$${results.costPerMillion.toFixed(4)}</span>
         </div>
     `;
 }
 
-function updateCostChart(costs) {
-    const ctx = document.getElementById('costChart').getContext('2d');
-    
-    if (costChart) {
-        costChart.destroy();
-    }
-    
-    costChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Per Run', 'Monthly', 'Annual'],
-            datasets: [{
-                data: [costs.costPerRun, costs.monthlyCost, costs.annualCost],
-                backgroundColor: [
-                    '#3498db',
-                    '#e74c3c',
-                    '#2ecc71'
-                ],
-                borderWidth: 2,
-                borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        font: {
-                            size: 14
-                        }
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return context.label + ': $' + context.parsed.toFixed(4);
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-// Initialize with default calculation
+// Initialize calculator
 document.addEventListener('DOMContentLoaded', function() {
+    // Run initial calculation
     calculateCosts();
     
-    // Add event listeners for real-time updates
+    // Add event listeners
     document.getElementById('records').addEventListener('input', calculateCosts);
     document.getElementById('warehouse-size').addEventListener('change', calculateCosts);
     document.getElementById('edition').addEventListener('change', calculateCosts);
     document.getElementById('frequency').addEventListener('change', calculateCosts);
-});
-
-// Stage breakdown chart
-function initializeStageChart() {
-    const ctx = document.getElementById('stageChart');
-    if (!ctx) return;
     
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['S3 to Staging', 'Staging to Bronze', 'Other Operations'],
-            datasets: [{
-                label: 'Execution Time (minutes)',
-                data: [1.23, 1.94, 0.06],
-                backgroundColor: '#3498db',
-                borderColor: '#2980b9',
-                borderWidth: 1
-            }, {
-                label: 'Credits Used',
-                data: [0.001, 0.0002, 0.0005],
-                backgroundColor: '#e74c3c',
-                borderColor: '#c0392b',
-                borderWidth: 1,
-                yAxisID: 'y1'
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    type: 'linear',
-                    display: true,
-                    position: 'left',
-                },
-                y1: {
-                    type: 'linear',
-                    display: true,
-                    position: 'right',
-                    grid: {
-                        drawOnChartArea: false,
-                    },
-                }
-            }
-        }
+    // Update slider value display in real-time
+    document.getElementById('records').addEventListener('input', function() {
+        const value = parseFloat(this.value);
+        document.getElementById('records-value').textContent = `${value}M`;
     });
-}
-
-// Comparison utilities
-function showComparison() {
-    // Add interactive comparison features
-    const comparisonData = {
-        snowflake: {
-            creditsPerMillion: 0.000138,
-            predictability: 'High',
-            scaling: 'Linear'
-        },
-        databricks: {
-            creditsPerMillion: 'Variable',
-            predictability: 'Medium',
-            scaling: 'Cluster-based'
-        }
-    };
-    
-    console.log('Comparison data loaded:', comparisonData);
-}
+});

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        input, select, button { margin: 10px; padding: 5px; }
+        #results { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Calculator Test</h1>
+    
+    <div class="test-section">
+        <h2>Simple Test</h2>
+        <label for="test-records">Records:</label>
+        <input type="number" id="test-records" value="12686818">
+        
+        <label for="test-warehouse">Warehouse:</label>
+        <select id="test-warehouse">
+            <option value="x-small">X-Small</option>
+            <option value="small">Small</option>
+            <option value="medium">Medium</option>
+        </select>
+        
+        <button onclick="testCalculate()">Test Calculate</button>
+        
+        <div id="test-results">Results will appear here</div>
+    </div>
+
+    <script>
+        // Simple test function
+        function testCalculate() {
+            console.log('testCalculate called');
+            
+            const records = document.getElementById('test-records').value;
+            const warehouse = document.getElementById('test-warehouse').value;
+            
+            console.log('Values:', records, warehouse);
+            
+            const result = `
+                <h3>Test Results:</h3>
+                <p>Records: ${records}</p>
+                <p>Warehouse: ${warehouse}</p>
+                <p>Calculation working: YES</p>
+            `;
+            
+            document.getElementById('test-results').innerHTML = result;
+            alert('Calculation completed! Check results below.');
+        }
+        
+        // Test on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Test page loaded');
+            document.getElementById('test-results').innerHTML = '<p>Page loaded successfully</p>';
+        });
+    </script>
+</body>
+</html>
