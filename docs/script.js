@@ -15,13 +15,13 @@ const WAREHOUSE_MULTIPLIERS = {
     'x-large': 16
 };
 
-// Base metrics from 3-day POC average (more reliable)
+// Base metrics from ACTUAL WAREHOUSE METERING (7 ETL runs - bulletproof for managers)
 const BASE_METRICS = {
     records: 12.686818, // millions
-    credits: 0.001715,
-    executionMinutes: 5.66,
-    queries: 27,
-    totalCostUSD: 0.005146
+    credits: 0.100672, // ACTUAL compute + cloud services credits
+    executionMinutes: 5.95,
+    queries: 26,
+    totalCostUSD: 0.3020 // REAL cost from Snowflake billing
 };
 
 function calculateCosts() {
